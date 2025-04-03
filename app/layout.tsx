@@ -44,6 +44,7 @@ function NavLink({ title, href }: { title: string; href: string }) {
         </Link>
     );
 }
+console.log(process.env.SPOTIFY_CLIENT_ID)
 
 function Navigation() {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -69,7 +70,7 @@ function Navigation() {
         <div className="border-b border-gray-600 flex sm:flex-row flex-col sm:justify-between sm:py-3 sm:px-5">
             <div className="flex flex-row items-center justify-center px-3 my-3 sm:my-0">
                 <p className={`${mainTitle.className} text-6xl`}>{titleText}</p>
-                <p className={`${alumniSans.className} text-2xl`}>Year 3</p>
+                <p className={`${alumniSans.className} text-2xl ps-4`}>Year 3</p>
             </div>
             <div className="sm:w-1/3 flex sm:justify-between">
                 <div className={`${fredericka.className} flex flex-auto justify-evenly items-center`}>
