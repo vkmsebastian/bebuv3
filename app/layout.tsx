@@ -33,7 +33,7 @@ const links = [
     { href: '/about', title: 'About' },
 ];
 
-const titleText = process.env.TITLE_TEXT;
+const titleText = process.env.NEXT_PUBLIC_TITLE_TEXT;
 
 function NavLink({ title, href }: { title: string; href: string }) {
     const pathname = usePathname();
