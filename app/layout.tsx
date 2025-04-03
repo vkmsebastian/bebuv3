@@ -31,7 +31,7 @@ function Navigation() {
             <div className="border w-1/3 flex justify-between">
                 <div className={`${fredericka.className} border flex flex-auto justify-evenly items-center`}>
                     <Link href={'/'}>Home</Link>
-                    <Link href={'/player'}>Music</Link>
+                    <Link href={'/player'}>Player</Link>
                     <Link href={'/player'}>Photos</Link>
                     <Link href={'/player'}>About</Link>
                 </div>
