@@ -97,8 +97,8 @@ export default function Player() {
 
         return (
             <div className="w-full">
-                <div className="w-full h-2 border-t rounded shadow-2xs flex justify-start">
-                    <span className={`h-full dark:bg-black rounded`} style={progressStyle}></span>
+                <div className="w-full h-1.5 border-t rounded shadow-2xs flex justify-start">
+                    <span className={`h-full dark:bg-black bg-white rounded`} style={progressStyle}></span>
                 </div>
                 <div className="flex flex-row justify-between text-xs">
                     <p>{`${toMmSs(currentTrackTime)}`}</p>
@@ -107,7 +107,6 @@ export default function Player() {
             </div>
         );
     };
-    console.log(progressPercent);
     useEffect(() => {
         // Set up the SDK callback
         globalThis.window.onSpotifyWebPlaybackSDKReady = () => {
@@ -205,7 +204,7 @@ export default function Player() {
                     className="absolute inset-0 -z-10 object-contain"
                     fill
                 />
-                <div className="relative p-4 h-[250px] w-[250px] mt-[90px] border dark:border-black border-white border-1">
+                <div className="relative p-4 h-[250px] w-[250px] mt-[90px] dark:border border-black">
                     <Image
                         src={currentTrack?.album?.images?.[0]?.url ?? defaultAlbumArt}
                         className="absolute object-fill"
