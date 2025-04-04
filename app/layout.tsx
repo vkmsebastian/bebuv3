@@ -34,7 +34,6 @@ const links = [
 ];
 
 const titleText = process.env.NEXT_PUBLIC_TITLE_TEXT;
-const playerScript = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_SCRIPT ?? '';
 
 function NavLink({ title, href }: { title: string; href: string }) {
     const pathname = usePathname();
