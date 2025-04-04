@@ -7,6 +7,10 @@ export default function usePlayerLogic() {
     const tokenUrl = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_URL;
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
+    const playerScript = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_SCRIPT ?? '';
+
+    const defaultAlbumArt = process.env.NEXT_PUBLIC_PLAYER_DEFAULT_ART ?? '';
+
     function generateRandomString(length) {
         let text = '';
         const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -67,6 +71,14 @@ export default function usePlayerLogic() {
         }
     }
 
+    function getAccessToken() {
+        return localStorage.getItem('spotify_access_token');
+    }
+
+    async function authorizeClient() {
+        authorize();
+    }
+
     useEffect(() => {
         const urlParams = new URL(window.location.href).searchParams;
         if (urlParams.has('code')) {
@@ -74,10 +86,11 @@ export default function usePlayerLogic() {
         }
     }, []);
 
-    async function authorizeClient() {
-        authorize();
-    }
     return {
         authorizeClient,
+        getAccessToken,
+
+        playerScript,
+        defaultAlbumArt,
     };
 }
