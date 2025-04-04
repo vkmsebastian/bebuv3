@@ -5,10 +5,11 @@ export default function usePlayerLogic() {
     const router = useRouter();
     const authorizeUrl = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZE_URL;
     const tokenUrl = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_URL;
+    const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
     const playerScript = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_SCRIPT ?? '';
-
+    const playerName = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_NAME ?? 'Bebu V3';
     const defaultAlbumArt = process.env.NEXT_PUBLIC_PLAYER_DEFAULT_ART ?? '';
 
     function generateRandomString(length) {
@@ -30,7 +31,7 @@ export default function usePlayerLogic() {
             response_type: 'code',
             client_id: clientId,
             scope: scope,
-            redirect_uri: 'http://localhost:3000/player',
+            redirect_uri: redirectUri,
             state: state,
         });
 
@@ -53,7 +54,7 @@ export default function usePlayerLogic() {
                     },
                     body: new URLSearchParams({
                         code: code,
-                        redirect_uri: 'http://localhost:3000/player',
+                        redirect_uri: redirectUri,
                         grant_type: 'authorization_code',
                     }).toString(),
                 });
@@ -90,6 +91,7 @@ export default function usePlayerLogic() {
         authorizeClient,
         getAccessToken,
 
+        playerName,
         playerScript,
         defaultAlbumArt,
     };

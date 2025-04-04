@@ -12,8 +12,13 @@ const metadataFont = Outfit({
 });
 
 export default function Player() {
-  const { authorizeClient, getAccessToken, playerScript, defaultAlbumArt } =
-    usePlayerLogic();
+  const {
+    authorizeClient,
+    getAccessToken,
+    playerScript,
+    defaultAlbumArt,
+    playerName,
+  } = usePlayerLogic();
   interface PlaybackData {
     duration?: number;
     position?: number;
@@ -143,7 +148,7 @@ export default function Player() {
 
       // Initialize player
       const player = new Spotify.Player({
-        name: "BebuV3 Player",
+        name: playerName,
         getOAuthToken: (cb) => cb(token),
         volume: 0.5,
       });
