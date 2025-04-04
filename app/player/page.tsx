@@ -233,15 +233,16 @@ export default function Player() {
         <div className="relative p-4 h-[250px] w-[250px] mt-[90px] dark:border border-black">
           <Image
             src={currentTrack?.album?.images?.[0]?.url ?? defaultAlbumArt}
-            className="absolute object-fill"
+            className="absolute object-fill select-none"
             alt="album art"
+            draggable="false"
             fill
           />
         </div>
         <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">
           <ProgressBar />
         </div>
-        <div className={`${metadataFont.className} w-3/5 `}>
+        <div className={`${metadataFont.className} w-3/5 select-none`}>
           <p className="text-start text-xl font-bold overflow-ellipsis text-nowrap ">
             {currentTrack?.name ?? "No track playing"}
           </p>
