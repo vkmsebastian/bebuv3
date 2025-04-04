@@ -15,7 +15,10 @@ export default function Player() {
     const { authorizeClient, getAccessToken, playerScript, defaultAlbumArt } = usePlayerLogic();
     const [playbackData, setPlaybackData] = useState({});
     const [currentTrack, setCurrentTrack] = useState({});
+    const [currentTrackTime, setCurrentTrackTime] = useState(0);
+    const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
     const playerRef = useRef<Spotify.Player | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Toggle play/pause (now works globally)
     const togglePlay = () => {
@@ -49,6 +52,44 @@ export default function Player() {
         }
 
         return artists.map((artist) => artist.name).join(', ');
+    };
+    const setTrackTime = () => {
+        const { duration: durationMs, position: positionMs } = playbackData;
+        setCurrentTrackDuration(durationMs);
+        setCurrentTrackTime(positionMs);
+    };
+
+    const runProgressBar = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+
+        intervalRef.current = setInterval(() => {
+            if (playerRef.current && !playbackData.paused && currentTrackTime < currentTrackDuration) {
+                setCurrentTrackTime((prev) => prev + 1000);
+            }
+        }, 1000);
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    };
+
+    const ProgressBar = () => {
+        function toMmSs(milliseconds) {
+            if (!milliseconds || milliseconds === 0) return '0:00';
+            const minutes = Math.floor(milliseconds / 59999);
+            const seconds = ((milliseconds % 59999) / 1000).toFixed(0);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        return (
+            <div>
+                <p>{`${toMmSs(currentTrackTime)} / ${toMmSs(currentTrackDuration)}`}</p>
+            </div>
+        );
     };
 
     useEffect(() => {
@@ -125,7 +166,8 @@ export default function Player() {
 
     useEffect(() => {
         const { track_window: trackInfo } = playbackData ?? {};
-
+        setTrackTime();
+        runProgressBar();
         if (!trackInfo) {
             return;
         }
@@ -156,7 +198,7 @@ export default function Player() {
                     />
                 </div>
                 <div className="grid h-[50px] w-3/5 items-center justify-center">
-                    <p>{'(progress bar)'}</p>
+                    <ProgressBar />
                 </div>
                 <div
                     className={`${metadataFont.className} w-3/5 text-shadow-md text-shadow-amber-50 dark:text-shadow-black`}
