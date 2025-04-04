@@ -1,9 +1,9 @@
 'use client';
+import Image from 'next/image';
 import Script from 'next/script';
+import { Outfit } from 'next/font/google';
 import { useEffect, useRef, useState } from 'react';
 import usePlayerLogic from './hooks/usePlayerLogic';
-import Image from 'next/image';
-import { Outfit } from 'next/font/google';
 
 const metadataFont = Outfit({
     subsets: ['latin'],
