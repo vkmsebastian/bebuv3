@@ -14,8 +14,26 @@ const metadataFont = Outfit({
 export default function Player() {
   const { authorizeClient, getAccessToken, playerScript, defaultAlbumArt } =
     usePlayerLogic();
-  const [playbackData, setPlaybackData] = useState({});
-  const [currentTrack, setCurrentTrack] = useState({});
+  interface PlaybackData {
+    duration?: number;
+    position?: number;
+    paused?: boolean;
+    track_window?: {
+      current_track?: Track;
+    };
+  }
+
+  const [playbackData, setPlaybackData] = useState<PlaybackData>({});
+  interface Track {
+    name?: string;
+    album?: {
+      name?: string;
+      images?: { url: string }[];
+    };
+    artists?: { name: string }[];
+  }
+
+  const [currentTrack, setCurrentTrack] = useState<Track>({});
   const [currentTrackTime, setCurrentTrackTime] = useState(0);
   const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
@@ -57,8 +75,8 @@ export default function Player() {
   };
   const setTrackTime = () => {
     const { duration: durationMs, position: positionMs } = playbackData;
-    setCurrentTrackDuration(durationMs);
-    setCurrentTrackTime(positionMs);
+    setCurrentTrackDuration(durationMs ?? 0);
+    setCurrentTrackTime(positionMs ?? 0);
   };
 
   const runProgressBar = () => {
@@ -89,11 +107,11 @@ export default function Player() {
   };
 
   const ProgressBar = () => {
-    function toMmSs(milliseconds) {
+    function toMmSs(milliseconds: number) {
       if (!milliseconds || milliseconds === 0) return "0:00";
       const minutes = Math.floor(milliseconds / 59999);
       const seconds = ((milliseconds % 59999) / 1000).toFixed(0);
-      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+      return `${minutes}:${Number(seconds) < 10 ? "0" : ""}${seconds}`;
     }
 
     const progressStyle = {
@@ -134,44 +152,30 @@ export default function Player() {
       playerRef.current = player;
 
       // Event listeners
-      const readyListener = player.addListener("ready", ({ device_id }) => {
+      player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
       });
 
-      const notReadyListener = player.addListener(
-        "not_ready",
-        ({ device_id }) => {
-          console.log("Device offline", device_id);
-        }
-      );
+      player.addListener("not_ready", ({ device_id }) => {
+        console.log("Device offline", device_id);
+      });
 
-      const errorListener = player.addListener(
-        "initialization_error",
-        ({ message }) => {
-          console.error("Init error:", message);
-        }
-      );
+      player.addListener("initialization_error", ({ message }) => {
+        console.error("Init error:", message);
+      });
 
-      const authErrorListener = player.addListener(
-        "authentication_error",
-        ({ message }) => {
-          console.error("Auth error:", message);
-        }
-      );
+      player.addListener("authentication_error", ({ message }) => {
+        console.error("Auth error:", message);
+      });
 
-      const accountErrorListener = player.addListener(
-        "account_error",
-        ({ message }) => {
-          console.error("Account error:", message);
-        }
-      );
+      player.addListener("account_error", ({ message }) => {
+        console.error("Account error:", message);
+      });
 
-      const playerStateChange = player.addListener(
-        "player_state_changed",
-        (data) => {
-          setPlaybackData(data);
-        }
-      );
+      player.addListener("player_state_changed", (data) => {
+        setPlaybackData(data);
+      });
+
       // Connect player
       player
         .connect()
@@ -184,12 +188,12 @@ export default function Player() {
 
       // Cleanup
       return () => {
-        readyListener.remove();
-        notReadyListener.remove();
-        errorListener.remove();
-        authErrorListener.remove();
-        accountErrorListener.remove();
-        playerStateChange.remove();
+        player.removeListener("ready");
+        player.removeListener("not_ready");
+        player.removeListener("initialization_error");
+        player.removeListener("authentication_error");
+        player.removeListener("account_error");
+        player.removeListener("player_state_changed");
         player.disconnect();
         playerRef.current = null;
       };
@@ -197,7 +201,7 @@ export default function Player() {
 
     // Clean up the global callback
     return () => {
-      globalThis.window.onSpotifyWebPlaybackSDKReady = undefined;
+      globalThis.window.onSpotifyWebPlaybackSDKReady = () => {};
     };
   }, [getAccessToken]);
 
