@@ -17,6 +17,7 @@ export default function Player() {
     const [currentTrack, setCurrentTrack] = useState({});
     const [currentTrackTime, setCurrentTrackTime] = useState(0);
     const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
+    const [progressPercent, setProgressPercent] = useState(0);
     const playerRef = useRef<Spotify.Player | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -66,7 +67,11 @@ export default function Player() {
 
         intervalRef.current = setInterval(() => {
             if (playerRef.current && !playbackData.paused && currentTrackTime < currentTrackDuration) {
-                setCurrentTrackTime((prev) => prev + 1000);
+                setCurrentTrackTime((prev) => {
+                    const newTime = prev + 1000;
+                    setProgressPercent((newTime / currentTrackDuration) * 100);
+                    return newTime;
+                });
             }
         }, 1000);
 
@@ -85,13 +90,24 @@ export default function Player() {
             const seconds = ((milliseconds % 59999) / 1000).toFixed(0);
             return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
+
+        const progressStyle = {
+            width: `${progressPercent}%`,
+        };
+
         return (
-            <div>
-                <p>{`${toMmSs(currentTrackTime)} / ${toMmSs(currentTrackDuration)}`}</p>
+            <div className="w-full">
+                <div className="w-full h-2 border-t rounded shadow-2xs flex justify-start">
+                    <span className={`h-full dark:bg-black rounded`} style={progressStyle}></span>
+                </div>
+                <div className="flex flex-row justify-between text-xs">
+                    <p>{`${toMmSs(currentTrackTime)}`}</p>
+                    <p>{`${toMmSs(currentTrackDuration)}`}</p>
+                </div>
             </div>
         );
     };
-
+    console.log(progressPercent);
     useEffect(() => {
         // Set up the SDK callback
         globalThis.window.onSpotifyWebPlaybackSDKReady = () => {
@@ -181,7 +197,7 @@ export default function Player() {
     }, [playbackData]);
 
     return (
-        <div className="grid h-[600px]">
+        <div className="grid h-[600px] text-shadow-md text-shadow-amber-50 dark:text-shadow-black">
             <div className="relative flex flex-col items-center md:w-[450px] md:h-[600px] w-full h-full md:place-self-start place-self-center overflow-hidden">
                 <Image
                     src="/images/player_bg.png"
@@ -197,12 +213,10 @@ export default function Player() {
                         fill
                     />
                 </div>
-                <div className="grid h-[50px] w-3/5 items-center justify-center">
+                <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">
                     <ProgressBar />
                 </div>
-                <div
-                    className={`${metadataFont.className} w-3/5 text-shadow-md text-shadow-amber-50 dark:text-shadow-black`}
-                >
+                <div className={`${metadataFont.className} w-3/5 `}>
                     <p className="text-start text-xl font-bold overflow-ellipsis text-nowrap ">
                         {currentTrack?.name ?? 'No track playing'}
                     </p>
