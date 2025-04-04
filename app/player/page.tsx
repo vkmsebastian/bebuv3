@@ -3,6 +3,13 @@ import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
 import usePlayerLogic from './hooks/usePlayerLogic';
 import Image from 'next/image';
+import { Outfit } from 'next/font/google';
+
+const metadataFont = Outfit({
+    subsets: ['latin'],
+    display: 'swap',
+    weight: '400',
+});
 
 export default function Player() {
     const { authorizeClient, getAccessToken, playerScript, defaultAlbumArt } = usePlayerLogic();
@@ -132,20 +139,35 @@ export default function Player() {
     }, [playbackData]);
 
     return (
-        <div>
-            <div className="flex flex-col items-center border w-[350px] h-[500px] m-4">
-                <div className="p-4">
+        <div className="grid h-[600px]">
+            <div className="relative flex flex-col items-center md:w-[450px] md:h-[600px] w-full h-full md:place-self-start place-self-center overflow-hidden">
+                <Image
+                    src="/images/player_bg.png"
+                    alt="player background"
+                    className="absolute inset-0 -z-10 object-contain"
+                    fill
+                />
+                <div className="relative p-4 h-[250px] w-[250px] mt-[90px] border dark:border-black border-white border-1">
                     <Image
                         src={currentTrack?.album?.images?.[0]?.url ?? defaultAlbumArt}
+                        className="absolute object-fill"
                         alt="album art"
-                        width={300}
-                        height={300}
+                        fill
                     />
-                    <p className="text-start">{currentTrack?.name ?? 'No track playing'}</p>
+                </div>
+                <div className="grid h-[50px] w-3/5 items-center justify-center">
+                    <p>{'(progress bar)'}</p>
+                </div>
+                <div
+                    className={`${metadataFont.className} w-3/5 text-shadow-md text-shadow-amber-50 dark:text-shadow-black`}
+                >
+                    <p className="text-start text-xl font-bold overflow-ellipsis text-nowrap ">
+                        {currentTrack?.name ?? 'No track playing'}
+                    </p>
                     <p className="text-start text-xs">{currentTrack?.album?.name ?? 'No track playing'}</p>
                     <p className="text-start text-xs">{getArtistName()}</p>
                 </div>
-                <div className="flex flex-row gap-3">
+                <div className="flex flex-row gap-3 mt-[20px]">
                     <button onClick={togglePlay}>Play/Pause</button>
                     <button onClick={refreshPlayer}>Refresh</button>
                     <button onClick={authorizeClient}>Authorize</button>

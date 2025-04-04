@@ -3,12 +3,10 @@ import { useState, useEffect } from 'react';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { Love_Light, Alumni_Sans_Pinstripe, Fredericka_the_Great } from 'next/font/google';
 
 import './globals.css';
-import usePlayerLogic from './player/hooks/usePlayerLogic';
 
 const fredericka = Fredericka_the_Great({
     subsets: ['latin'],
