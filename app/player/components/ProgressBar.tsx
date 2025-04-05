@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { PlayerContext } from "@/app/contexts/PlayerContext";
 import { NotyfContext } from "@/app/contexts/NotyfContext";
+import _ from "lodash";
 
 export default function ProgressBar() {
   const {
@@ -82,17 +83,13 @@ export default function ProgressBar() {
     }
 
     intervalRef.current = setInterval(() => {
-      if (
-        !playerRef?.current ||
-        playbackData?.paused ||
-        currentTrackTime >= currentTrackDuration
-      ) {
+      if (!playerRef?.current || playbackData?.paused) {
         return;
       }
+
       setCurrentTrackTime?.((prev: number) => {
         let oldTime = prev;
         if (currentTrack?.timestamp < playbackData?.timestamp) {
-          console.log("timestmpa");
           oldTime = playbackData?.position ?? 0;
         }
         const newTime = oldTime + 1000;
@@ -102,7 +99,7 @@ export default function ProgressBar() {
 
       setCurrentTrack?.((prev) => {
         let data = prev;
-        if (prev?.name !== track?.name) {
+        if (prev?.name !== track?.name || _.isEmpty(prev)) {
           setCurrentTrackTime?.(positionMs);
           setCurrentTrackDuration?.(durationMs);
           data = { ...track, timestamp };
@@ -130,6 +127,7 @@ export default function ProgressBar() {
     setCurrentTrackDuration,
     setProgressPercent,
   ]);
+
   return (
     <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">
       <div className="w-full">
