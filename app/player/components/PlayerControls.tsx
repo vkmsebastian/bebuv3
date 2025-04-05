@@ -1,9 +1,58 @@
-import { useContext } from "react";
+import { MouseEventHandler, useContext } from "react";
 import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 import Image from "next/image";
 
+const ControlButtons = ({
+  state,
+  handleClick,
+}: {
+  state: string;
+  handleClick: MouseEventHandler;
+}) => {
+  return (
+    <div className="flex flex-row gap-3">
+      <Image
+        src={`/images/controls/prev.png`}
+        width={50}
+        height={50}
+        alt="play/pause"
+        onClick={handleClick}
+      />
+      <Image
+        src={`/images/controls/${state}.png`}
+        width={50}
+        height={50}
+        alt="play/pause"
+        onClick={handleClick}
+      />
+      <Image
+        src={`/images/controls/next.png`}
+        width={50}
+        height={50}
+        alt="play/pause"
+        onClick={handleClick}
+      />
+    </div>
+  );
+};
+
+const AuthButtons = ({
+  refreshPlayer,
+  authorizeClient,
+}: {
+  refreshPlayer: MouseEventHandler;
+  authorizeClient: MouseEventHandler;
+}) => {
+  return (
+    <div className="flex flex-row gap-3">
+      <button onClick={refreshPlayer}>Refresh</button>
+      <button onClick={authorizeClient}>Authorize</button>
+    </div>
+  );
+};
+
 export default function PlayerControls() {
-  const { authorizeClient, playerRef, playbackData } =
+  const { authorizeClient, playerRef, playerReady, playbackData } =
     useContext(PlayerContext) || {};
 
   const refreshPlayer = () => {
@@ -39,15 +88,14 @@ export default function PlayerControls() {
 
   return (
     <div className="flex flex-row gap-3 mt-[20px]">
-      <Image
-        src={`/images/controls/${state}.png`}
-        width={50}
-        height={50}
-        alt="play/pause"
-        onClick={handleClick}
-      />
-      <button onClick={refreshPlayer}>Refresh</button>
-      <button onClick={authorizeClient}>Authorize</button>
+      {playerReady ? (
+        <ControlButtons state={state} handleClick={handleClick} />
+      ) : (
+        <AuthButtons
+          authorizeClient={authorizeClient}
+          refreshPlayer={refreshPlayer}
+        />
+      )}
     </div>
   );
 }

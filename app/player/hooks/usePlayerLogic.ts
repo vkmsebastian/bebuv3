@@ -49,11 +49,15 @@ export type PlayerLogicContextType = {
   setCurrentTrackDuration: (duration: number) => void;
   progressPercent: number;
   setProgressPercent: (percent: number) => void;
+  playerReady: boolean;
+  setPlayerReady: Dispatch<SetStateAction<boolean>>;
   playerRef: RefObject<Spotify.Player | null>;
   intervalRef: RefObject<NodeJS.Timeout | null>;
 };
 
-export const PlayerContext = createContext<PlayerLogicContextType | null>(null);
+export const PlayerContext = createContext(
+  {} as ReturnType<typeof usePlayerLogic>
+);
 
 export default function usePlayerLogic(): PlayerLogicContextType {
   const router = useRouter();
@@ -72,6 +76,7 @@ export default function usePlayerLogic(): PlayerLogicContextType {
   const [currentTrackTime, setCurrentTrackTime] = useState(0);
   const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<Spotify.Player | null>(null);
   const intervalRef = useRef(null);
 
@@ -189,10 +194,12 @@ export default function usePlayerLogic(): PlayerLogicContextType {
       // Event listeners
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        setPlayerReady(true);
       });
 
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device offline", device_id);
+        setPlayerReady(false);
       });
 
       player.addListener("initialization_error", ({ message }) => {
@@ -257,12 +264,14 @@ export default function usePlayerLogic(): PlayerLogicContextType {
     setCurrentTrackDuration,
     progressPercent,
     setProgressPercent,
-    playerRef,
-    intervalRef,
+    playerReady,
+    setPlayerReady,
     authorizeUrl,
     tokenUrl,
     redirectUri,
     clientId,
     clientSecret,
+    playerRef,
+    intervalRef,
   };
 }

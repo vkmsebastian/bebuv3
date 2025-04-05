@@ -14,7 +14,7 @@ export default function Player() {
   const contextValue: PlayerLogicContextType = usePlayerLogic();
 
   const { playerScript } = contextValue;
-
+  
   return (
     <PlayerContext.Provider value={contextValue}>
       <div className="grid h-[600px] text-shadow-md text-shadow-amber-50 dark:text-shadow-black">
