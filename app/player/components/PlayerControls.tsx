@@ -1,13 +1,13 @@
 import { useContext } from "react";
-import { PlayerContext } from "../page";
+import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 import Image from "next/image";
 
 export default function PlayerControls() {
   const { authorizeClient, playerRef, playbackData } =
-    useContext(PlayerContext);
+    useContext(PlayerContext) || {};
 
   const refreshPlayer = () => {
-    if (!playerRef.current) {
+    if (!playerRef?.current) {
       console.error("Player not initialized");
       return;
     }
@@ -19,7 +19,7 @@ export default function PlayerControls() {
 
   // Toggle play/pause (now works globally)
   const togglePlay = () => {
-    if (!playerRef.current) {
+    if (!playerRef?.current) {
       console.error("Player not initialized");
       return;
     }
@@ -31,7 +31,7 @@ export default function PlayerControls() {
   };
 
   const handleClick = () => {
-    console.log(playerRef.current ?? {});
+    console.log(playerRef?.current ?? {});
     togglePlay();
   };
 

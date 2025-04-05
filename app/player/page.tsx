@@ -1,17 +1,17 @@
 "use client";
 import Image from "next/image";
 import Script from "next/script";
-import { createContext } from "react";
-import usePlayerLogic from "./hooks/usePlayerLogic";
+import usePlayerLogic, {
+  PlayerContext,
+  PlayerLogicContextType,
+} from "./hooks/usePlayerLogic";
 import PlayerControls from "./components/PlayerControls";
 import ProgressBar from "./components/ProgressBar";
 import TrackInfo from "./components/TrackInfo";
 import AlbumArt from "./components/AlbumArt";
 
-export const PlayerContext = createContext({});
-
 export default function Player() {
-  const contextValue = usePlayerLogic();
+  const contextValue: PlayerLogicContextType = usePlayerLogic();
 
   const { playerScript } = contextValue;
 
@@ -30,8 +30,8 @@ export default function Player() {
           <TrackInfo />
           <PlayerControls />
         </div>
-        <Script src={playerScript} strategy="afterInteractive" />
       </div>
+      <Script src={playerScript} strategy="afterInteractive" />
     </PlayerContext.Provider>
   );
 }

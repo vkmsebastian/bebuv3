@@ -1,12 +1,11 @@
 import { useContext, useEffect } from "react";
-import { PlayerContext } from "../page";
+import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 
 export default function ProgressBar() {
   const {
     intervalRef,
     playerRef,
     playbackData,
-    currentTrack,
     currentTrackDuration,
     setCurrentTrackDuration,
     currentTrackTime,
@@ -14,40 +13,7 @@ export default function ProgressBar() {
     progressPercent,
     setProgressPercent,
     setCurrentTrack,
-  } = useContext(PlayerContext);
-
-  function setTrackTime() {
-    const { duration: durationMs, position: positionMs } = playbackData;
-    setCurrentTrackDuration(durationMs ?? 0);
-    setCurrentTrackTime(positionMs ?? 0);
-  }
-
-  function runProgressBar() {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = setInterval(() => {
-      if (
-        playerRef.current &&
-        !playbackData.paused &&
-        currentTrackTime < currentTrackDuration
-      ) {
-        setCurrentTrackTime((prev) => {
-          const newTime = prev + 1000;
-          setProgressPercent((newTime / currentTrackDuration) * 100);
-          return newTime;
-        });
-      }
-    }, 1000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }
+  } = useContext(PlayerContext) ?? {};
 
   function toMmSs(milliseconds: number) {
     if (!milliseconds || milliseconds === 0) return "0:00";
@@ -62,8 +28,10 @@ export default function ProgressBar() {
 
   useEffect(() => {
     const { track_window: trackInfo } = playbackData ?? {};
-    setTrackTime();
-    runProgressBar();
+    const { duration: durationMs, position: positionMs } = playbackData ?? {};
+    setCurrentTrackDuration?.(durationMs ?? 0);
+    setCurrentTrackTime?.(positionMs ?? 0);
+
     if (!trackInfo) {
       return;
     }
@@ -73,8 +41,52 @@ export default function ProgressBar() {
       return;
     }
 
-    setCurrentTrack(currentTrack);
-  }, [playbackData]);
+    setCurrentTrack?.(currentTrack);
+
+    if (intervalRef?.current) {
+      clearInterval(intervalRef?.current);
+    }
+
+    if (
+      intervalRef === undefined ||
+      currentTrackTime === undefined ||
+      currentTrackDuration === undefined
+    ) {
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      if (
+        !playerRef?.current ||
+        playbackData?.paused ||
+        currentTrackTime >= currentTrackDuration
+      ) {
+        return;
+      }
+      setCurrentTrackTime?.((prev: number) => {
+        const newTime = prev + 1000;
+        setProgressPercent?.((newTime / currentTrackDuration) * 100);
+        return newTime;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef?.current) {
+        clearInterval(intervalRef?.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [
+    playbackData,
+    currentTrackDuration,
+    currentTrackTime,
+    intervalRef,
+    playerRef,
+    setCurrentTrack,
+    setCurrentTrackTime,
+    setCurrentTrackDuration,
+    setProgressPercent,
+  ]);
 
   return (
     <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">
@@ -85,8 +97,8 @@ export default function ProgressBar() {
             style={progressStyle}></span>
         </div>
         <div className="flex flex-row justify-between text-xs">
-          <p>{`${toMmSs(currentTrackTime)}`}</p>
-          <p>{`${toMmSs(currentTrackDuration)}`}</p>
+          <p>{`${toMmSs(currentTrackTime ?? 0)}`}</p>
+          <p>{`${toMmSs(currentTrackDuration ?? 0)}`}</p>
         </div>
       </div>
     </div>

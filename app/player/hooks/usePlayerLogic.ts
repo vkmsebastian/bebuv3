@@ -1,44 +1,81 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 
-export default function usePlayerLogic() {
+interface CurrentTrack {
+  album: {
+    images: Array<{ url: string }>;
+    name: string;
+  };
+  artists: Array<{ name: string }>;
+  name: string;
+}
+
+interface PlaybackData {
+  paused: boolean;
+  duration: number;
+  position: number;
+  track_window: {
+    current_track: CurrentTrack;
+  };
+}
+
+export type PlayerLogicContextType = {
+  authorizeClient: () => Promise<void>;
+
+  playerName: string;
+  playerScript: string;
+  defaultAlbumArt: string;
+  authorizeUrl: string;
+  tokenUrl: string;
+  redirectUri: string;
+  clientId: string;
+  clientSecret: string;
+
+  playbackData: PlaybackData;
+  setPlaybackData: Dispatch<SetStateAction<PlaybackData>>;
+  currentTrack: CurrentTrack;
+  setCurrentTrack: Dispatch<SetStateAction<CurrentTrack>>;
+  currentTrackTime: number;
+  setCurrentTrackTime: Dispatch<SetStateAction<number>>;
+  currentTrackDuration: number;
+  setCurrentTrackDuration: (duration: number) => void;
+  progressPercent: number;
+  setProgressPercent: (percent: number) => void;
+  playerRef: RefObject<Spotify.Player | null>;
+  intervalRef: RefObject<NodeJS.Timeout | null>;
+};
+
+export const PlayerContext = createContext<PlayerLogicContextType | null>(null);
+
+export default function usePlayerLogic(): PlayerLogicContextType {
   const router = useRouter();
-  const authorizeUrl = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZE_URL;
-  const tokenUrl = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_URL;
-  const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
-  const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET;
+  const authorizeUrl = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZE_URL ?? "";
+  const tokenUrl = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_URL ?? "";
+  const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI ?? "";
+  const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID ?? "";
+  const clientSecret = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET ?? "";
   const playerScript = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_SCRIPT ?? "";
   const playerName = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_NAME ?? "Bebu V3";
   const defaultAlbumArt = process.env.NEXT_PUBLIC_PLAYER_DEFAULT_ART ?? "";
 
-  //   interface PlaybackData {
-  //     duration?: number;
-  //     position?: number;
-  //     paused?: boolean;
-  //     track_window?: {
-  //       current_track?: Track,
-  //     };
-  //   }
+  const [playbackData, setPlaybackData] = useState({} as PlaybackData);
 
-  const [playbackData, setPlaybackData] = useState({});
-  //   interface Track {
-  //     name?: string;
-  //     album?: {
-  //       name?: string,
-  //       images?: { url: string }[],
-  //     };
-  //     artists?: { name: string }[];
-  //   }
-
-  const [currentTrack, setCurrentTrack] = useState({});
+  const [currentTrack, setCurrentTrack] = useState({} as CurrentTrack);
   const [currentTrackTime, setCurrentTrackTime] = useState(0);
   const [currentTrackDuration, setCurrentTrackDuration] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
-  const playerRef = useRef(null);
+  const playerRef = useRef<Spotify.Player | null>(null);
   const intervalRef = useRef(null);
 
-  function generateRandomString(length) {
+  function generateRandomString(length: number) {
     let text = "";
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -65,58 +102,67 @@ export default function usePlayerLogic() {
     window.location.href = `${authorizeUrl}${requestParams.toString()}`;
   }
 
-  async function authenticate() {
-    const currentUrl = window.location.href;
-    const urlParams = new URL(currentUrl).searchParams;
-    const code = urlParams.get("code");
-    const state = urlParams.get("state");
-
-    if (state === localStorage.getItem("spotify_auth_state")) {
-      try {
-        const response = await fetch(tokenUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization:
-              "Basic " +
-              Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
-          },
-          body: new URLSearchParams({
-            code: code,
-            redirect_uri: redirectUri,
-            grant_type: "authorization_code",
-          }).toString(),
-        });
-
-        const data = await response.json();
-        console.log("Authorization successful", data);
-        localStorage.setItem("spotify_access_token", data.access_token);
-        localStorage.setItem("spotify_refresh_token", data.refresh_token);
-        router.push("/player");
-      } catch (error) {
-        console.log("Authentication failed", error);
-      }
-    } else {
-      console.log("State mismatch");
-    }
-  }
-
-  function getAccessToken() {
-    return localStorage.getItem("spotify_access_token");
-  }
-
   async function authorizeClient() {
     authorize();
   }
 
   useEffect(() => {
     const urlParams = new URL(window.location.href).searchParams;
+    async function authenticate() {
+      const currentUrl = window.location.href;
+      const urlParams = new URL(currentUrl).searchParams;
+      const code = urlParams.get("code") ?? "";
+      const state = urlParams.get("state") ?? "";
+
+      if (state === localStorage.getItem("spotify_auth_state")) {
+        try {
+          const response = await fetch(tokenUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization:
+                "Basic " +
+                Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+            },
+            body: new URLSearchParams({
+              code: code,
+              redirect_uri: redirectUri,
+              grant_type: "authorization_code",
+            }).toString(),
+          });
+
+          const data = await response.json();
+          console.log("Authorization successful", data);
+          localStorage.setItem("spotify_access_token", data.access_token);
+          localStorage.setItem("spotify_refresh_token", data.refresh_token);
+          router.push("/player");
+        } catch (error) {
+          console.log("Authentication failed", error);
+        }
+      } else {
+        console.log("State mismatch");
+      }
+    }
     if (urlParams.has("code")) {
       authenticate();
     }
-  }, []);
+  }, [
+    tokenUrl,
+    redirectUri,
+    clientId,
+    clientSecret,
+    router,
+    playerName,
+    playerScript,
+    defaultAlbumArt,
+    authorizeUrl,
+  ]);
 
   useEffect(() => {
+    function getAccessToken() {
+      return localStorage.getItem("spotify_access_token");
+    }
+
     // Set up the SDK callback
     globalThis.window.onSpotifyWebPlaybackSDKReady = () => {
       if (!globalThis.Spotify) {
@@ -192,11 +238,10 @@ export default function usePlayerLogic() {
     return () => {
       globalThis.window.onSpotifyWebPlaybackSDKReady = () => {};
     };
-  }, [getAccessToken]);
+  }, [playerName, playerScript, defaultAlbumArt]);
 
   return {
     authorizeClient,
-    getAccessToken,
 
     playerName,
     playerScript,

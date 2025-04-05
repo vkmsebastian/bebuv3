@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { PlayerContext } from "../page";
+import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 import { Outfit } from "next/font/google";
 
 const metadataFont = Outfit({
@@ -9,7 +9,7 @@ const metadataFont = Outfit({
 });
 
 export default function TrackInfo() {
-  const { currentTrack } = useContext(PlayerContext);
+  const { currentTrack } = useContext(PlayerContext) || {};
 
   function getArtistName() {
     const artists = currentTrack?.artists ?? [];
