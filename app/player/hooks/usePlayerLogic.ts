@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";
+import { off } from "process";
 
 interface CurrentTrack {
   album: {
@@ -63,37 +64,6 @@ export default function usePlayerLogic() {
     window.location.href = `${authorizeUrl}${requestParams.toString()}`;
   }
 
-  async function refreshAccessToken() {
-    const refreshToken = localStorage.getItem("spotify_refresh_token");
-    if (!refreshToken) {
-      console.error("No refresh token available");
-      return;
-    }
-
-    const response = await fetch(tokenUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization:
-          "Basic " +
-          Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
-      },
-      body: new URLSearchParams({
-        grant_type: "refresh_token",
-        refresh_token: refreshToken,
-      }).toString(),
-    });
-
-    const data = await response.json();
-
-    if (data.access_token) {
-      console.log("Access token refreshed:", data.access_token);
-      localStorage.setItem("spotify_access_token", data.access_token);
-    } else {
-      console.error("Failed to refresh access token:", data);
-    }
-  }
-
   async function authorizeClient() {
     authorize();
   }
@@ -140,9 +110,46 @@ export default function usePlayerLogic() {
         console.log("State mismatch");
       }
     }
+
+    async function refreshAccessToken() {
+      const refreshToken = localStorage.getItem("spotify_refresh_token");
+      if (!refreshToken) {
+        console.error("No refresh token available");
+        return;
+      }
+
+      const response = await fetch(tokenUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization:
+            "Basic " +
+            Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+        },
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+        }).toString(),
+      });
+
+      const data = await response.json();
+
+      if (data.access_token) {
+        console.log("Access token refreshed:", data.access_token);
+        localStorage.setItem("spotify_access_token", data.access_token);
+      } else {
+        console.error("Failed to refresh access token:", data);
+      }
+    }
     if (urlParams.has("code")) {
       authenticate();
     }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
   }, [
     tokenUrl,
     redirectUri,
