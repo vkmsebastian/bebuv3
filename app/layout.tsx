@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -16,6 +16,7 @@ import { Notyf } from "notyf";
 import "./globals.css";
 import "notyf/notyf.min.css";
 import { NotyfContext } from "./contexts/NotyfContext";
+import { SystemContext, useSystemContextLogic } from "./contexts/SystemContext";
 
 const fredericka = Fredericka_the_Great({
   subsets: ["latin"],
@@ -122,6 +123,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [notyf, setNotyf] = useState<Notyf | null>(null);
+  const systemContextValue = useSystemContextLogic();
 
   useEffect(() => {
     const notyfInstance = new Notyf({
@@ -149,10 +151,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-white dark:bg-black dark:text-white antialiased">
-        <NotyfContext.Provider value={notyf}>
-          <Navigation />
-          {children}
-        </NotyfContext.Provider>
+        <SystemContext.Provider value={systemContextValue}>
+          <NotyfContext.Provider value={notyf}>
+            <Navigation />
+            {children}
+          </NotyfContext.Provider>
+        </SystemContext.Provider>
       </body>
     </html>
   );

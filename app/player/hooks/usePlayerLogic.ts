@@ -98,9 +98,10 @@ export default function usePlayerLogic() {
           console.log("Authorization successful", data);
           localStorage.setItem("spotify_access_token", data.access_token);
           localStorage.setItem("spotify_refresh_token", data.refresh_token);
+          const expiresIn = data.expires_in * 1000;
           refreshIntervalRef.current = setInterval(
             refreshAccessToken,
-            data?.expires_in ?? 3000
+            expiresIn
           );
           router.push("/player");
         } catch (error) {
@@ -193,6 +194,7 @@ export default function usePlayerLogic() {
       // Event listeners
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        localStorage.setItem("spotify_device_id", device_id);
         setPlayerReady(true);
       });
 
