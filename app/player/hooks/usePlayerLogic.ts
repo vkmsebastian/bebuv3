@@ -33,6 +33,7 @@ export default function usePlayerLogic() {
   const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<Spotify.Player | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const nowPlayingNotyfRef = useRef<NotyfNotification | null>(null);
 
   function generateRandomString(length: number) {
@@ -60,6 +61,37 @@ export default function usePlayerLogic() {
     });
 
     window.location.href = `${authorizeUrl}${requestParams.toString()}`;
+  }
+
+  async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem("spotify_refresh_token");
+    if (!refreshToken) {
+      console.error("No refresh token available");
+      return;
+    }
+
+    const response = await fetch(tokenUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization:
+          "Basic " +
+          Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+      },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      }).toString(),
+    });
+
+    const data = await response.json();
+
+    if (data.access_token) {
+      console.log("Access token refreshed:", data.access_token);
+      localStorage.setItem("spotify_access_token", data.access_token);
+    } else {
+      console.error("Failed to refresh access token:", data);
+    }
   }
 
   async function authorizeClient() {
@@ -92,9 +124,14 @@ export default function usePlayerLogic() {
           });
 
           const data = await response.json();
+
           console.log("Authorization successful", data);
           localStorage.setItem("spotify_access_token", data.access_token);
           localStorage.setItem("spotify_refresh_token", data.refresh_token);
+          refreshIntervalRef.current = setInterval(
+            refreshAccessToken,
+            data?.expires_in ?? 3000
+          );
           router.push("/player");
         } catch (error) {
           console.log("Authentication failed", error);

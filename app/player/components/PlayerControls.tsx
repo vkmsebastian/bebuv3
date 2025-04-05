@@ -55,8 +55,13 @@ const AuthButtons = ({
 };
 
 export default function PlayerControls() {
-  const { authorizeClient, playerRef, playerReady, playbackData } =
-    useContext(PlayerContext) || {};
+  const {
+    authorizeClient,
+    playerRef,
+    playerReady,
+    playbackData,
+    refreshAccessToken,
+  } = useContext(PlayerContext) || {};
 
   // Toggle play/pause (now works globally)
   const handleControl = (action: string) => {
@@ -82,7 +87,7 @@ export default function PlayerControls() {
   const state = playbackData?.paused ? "pause" : "play";
 
   return (
-    <div className="flex flex-row gap-3 mt-[20px]">
+    <div className="flex flex-row gap-3 mt-[10px]">
       {playerReady ? (
         <ControlButtons state={state} handler={handleControl} />
       ) : (

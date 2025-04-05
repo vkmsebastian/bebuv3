@@ -132,7 +132,7 @@ export default function RootLayout({
       types: [
         {
           type: "success",
-          background: "#868a86",
+          background: "#212121",
           className: `text-md ${notyfFont.className}`,
           icon: false,
         },
