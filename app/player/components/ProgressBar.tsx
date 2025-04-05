@@ -1,8 +1,10 @@
 import { useContext, useEffect } from "react";
 import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
+import { NotyfContext } from "@/app/layout";
 
 export default function ProgressBar() {
   const {
+    nowPlayingNotyfRef,
     intervalRef,
     playerRef,
     playbackData,
@@ -15,6 +17,8 @@ export default function ProgressBar() {
     setCurrentTrack,
   } = useContext(PlayerContext) ?? {};
 
+  const notyf = useContext(NotyfContext);
+
   function toMmSs(milliseconds: number) {
     if (!milliseconds || milliseconds === 0) return "0:00";
     const minutes = Math.floor(milliseconds / 59999);
@@ -25,6 +29,26 @@ export default function ProgressBar() {
   const progressStyle = {
     width: `${progressPercent}%`,
   };
+
+  // This effect is used to show a notification when the track changes
+  useEffect(() => {
+    if (!playbackData || !notyf || nowPlayingNotyfRef.current) {
+      return;
+    }
+    const { track_window: trackInfo } = playbackData;
+    const title = trackInfo?.current_track?.name;
+
+    if (!title || playbackData?.paused) {
+      return;
+    }
+
+    nowPlayingNotyfRef.current = notyf?.success(`${title}`) ?? null;
+    setTimeout(() => {
+      if (nowPlayingNotyfRef.current) {
+        nowPlayingNotyfRef.current = null;
+      }
+    }, 3000);
+  }, [playbackData, notyf, nowPlayingNotyfRef]);
 
   useEffect(() => {
     const { track_window: trackInfo } = playbackData ?? {};

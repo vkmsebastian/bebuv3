@@ -1,13 +1,16 @@
 import { MouseEventHandler, useContext } from "react";
 import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 import Image from "next/image";
+import { NotyfContext } from "@/app/layout";
 
 const ControlButtons = ({
   state,
-  handleClick,
+  handleNext,
+  handlePlayPause,
 }: {
   state: string;
-  handleClick: MouseEventHandler;
+  handleNext: MouseEventHandler;
+  handlePlayPause: MouseEventHandler;
 }) => {
   return (
     <div className="flex flex-row gap-3">
@@ -16,37 +19,40 @@ const ControlButtons = ({
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handleClick}
+        onClick={handlePlayPause}
       />
       <Image
         src={`/images/controls/${state}.png`}
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handleClick}
+        onClick={handlePlayPause}
       />
       <Image
         src={`/images/controls/next.png`}
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handleClick}
+        onClick={handleNext}
       />
     </div>
   );
 };
 
 const AuthButtons = ({
-  refreshPlayer,
   authorizeClient,
 }: {
-  refreshPlayer: MouseEventHandler;
   authorizeClient: MouseEventHandler;
 }) => {
   return (
     <div className="flex flex-row gap-3">
-      <button onClick={refreshPlayer}>Refresh</button>
-      <button onClick={authorizeClient}>Authorize</button>
+      <Image
+        src="/images/spotify.png"
+        alt="spotify"
+        width={50}
+        height={50}
+        onClick={authorizeClient}
+      />
     </div>
   );
 };
@@ -55,16 +61,18 @@ export default function PlayerControls() {
   const { authorizeClient, playerRef, playerReady, playbackData } =
     useContext(PlayerContext) || {};
 
-  const refreshPlayer = () => {
-    if (!playerRef?.current) {
-      console.error("Player not initialized");
-      return;
-    }
+  const notyf = useContext(NotyfContext);
 
-    playerRef.current.getCurrentState().then((state) => {
-      console.log("Current state:", state);
-    });
-  };
+  // const refreshPlayer = () => {
+  //   if (!playerRef?.current) {
+  //     console.error("Player not initialized");
+  //     return;
+  //   }
+
+  //   playerRef.current.getCurrentState().then((state) => {
+  //     console.log("Current state:", state);
+  //   });
+  // };
 
   // Toggle play/pause (now works globally)
   const togglePlay = () => {
@@ -79,9 +87,13 @@ export default function PlayerControls() {
     });
   };
 
-  const handleClick = () => {
-    console.log(playerRef?.current ?? {});
+  const handlePlayPause = () => {
     togglePlay();
+  };
+
+  const handleNext = () => {
+    console.log(notyf);
+    notyf?.success("Next track");
   };
 
   const state = playbackData?.paused ? "pause" : "play";
@@ -89,12 +101,13 @@ export default function PlayerControls() {
   return (
     <div className="flex flex-row gap-3 mt-[20px]">
       {playerReady ? (
-        <ControlButtons state={state} handleClick={handleClick} />
-      ) : (
-        <AuthButtons
-          authorizeClient={authorizeClient}
-          refreshPlayer={refreshPlayer}
+        <ControlButtons
+          state={state}
+          handleNext={handleNext}
+          handlePlayPause={handlePlayPause}
         />
+      ) : (
+        <AuthButtons authorizeClient={authorizeClient} />
       )}
     </div>
   );

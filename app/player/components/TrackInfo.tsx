@@ -22,7 +22,7 @@ export default function TrackInfo() {
   }
   return (
     <div className={`${metadataFont.className} w-3/5 select-none`}>
-      <p className="text-start text-xl font-bold overflow-ellipsis text-nowrap ">
+      <p className="text-start text-xl font-bold overflow-hidden text-nowrap ">
         {currentTrack?.name ?? "No track playing"}
       </p>
       <p className="text-start text-xs">

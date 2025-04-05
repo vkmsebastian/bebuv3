@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { NotyfNotification } from "notyf";
 
 interface CurrentTrack {
   album: {
@@ -53,6 +54,7 @@ export type PlayerLogicContextType = {
   setPlayerReady: Dispatch<SetStateAction<boolean>>;
   playerRef: RefObject<Spotify.Player | null>;
   intervalRef: RefObject<NodeJS.Timeout | null>;
+  nowPlayingNotyfRef: RefObject<NotyfNotification | null>;
 };
 
 export const PlayerContext = createContext(
@@ -79,6 +81,7 @@ export default function usePlayerLogic(): PlayerLogicContextType {
   const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<Spotify.Player | null>(null);
   const intervalRef = useRef(null);
+  const nowPlayingNotyfRef = useRef(null);
 
   function generateRandomString(length: number) {
     let text = "";
@@ -273,5 +276,6 @@ export default function usePlayerLogic(): PlayerLogicContextType {
     clientSecret,
     playerRef,
     intervalRef,
+    nowPlayingNotyfRef,
   };
 }
