@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -15,6 +15,7 @@ import { Notyf } from "notyf";
 
 import "./globals.css";
 import "notyf/notyf.min.css";
+import { NotyfContext } from "./contexts/NotyfContext";
 
 const fredericka = Fredericka_the_Great({
   subsets: ["latin"],
@@ -48,8 +49,6 @@ const links = [
 ];
 
 const titleText = process.env.NEXT_PUBLIC_TITLE_TEXT;
-
-export const NotyfContext = createContext<Notyf | null>(null);
 
 function NavLink({ title, href }: Readonly<{ title: string; href: string }>) {
   const pathname = usePathname();

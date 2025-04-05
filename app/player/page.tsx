@@ -1,20 +1,18 @@
 "use client";
 import Image from "next/image";
 import Script from "next/script";
-import usePlayerLogic, {
-  PlayerContext,
-  PlayerLogicContextType,
-} from "./hooks/usePlayerLogic";
+import { PlayerContext } from "@/app/contexts/PlayerContext";
 import PlayerControls from "./components/PlayerControls";
 import ProgressBar from "./components/ProgressBar";
 import TrackInfo from "./components/TrackInfo";
 import AlbumArt from "./components/AlbumArt";
+import usePlayerLogic from "./hooks/usePlayerLogic";
 
 export default function Player() {
-  const contextValue: PlayerLogicContextType = usePlayerLogic();
+  const contextValue = usePlayerLogic();
 
   const { playerScript } = contextValue;
-  
+
   return (
     <PlayerContext.Provider value={contextValue}>
       <div className="grid h-[600px] text-shadow-md text-shadow-amber-50 dark:text-shadow-black">

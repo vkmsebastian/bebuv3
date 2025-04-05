@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";
 
@@ -13,20 +13,6 @@ interface CurrentTrack {
   timestamp: number;
 }
 
-interface PlaybackData {
-  paused: boolean;
-  duration: number;
-  position: number;
-  track_window: {
-    current_track: CurrentTrack;
-  };
-  timestamp: number;
-}
-
-export const PlayerContext = createContext(
-  {} as ReturnType<typeof usePlayerLogic>
-);
-
 export default function usePlayerLogic() {
   const router = useRouter();
   const authorizeUrl = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZE_URL ?? "";
@@ -38,7 +24,7 @@ export default function usePlayerLogic() {
   const playerName = process.env.NEXT_PUBLIC_SPOTIFY_PLAYER_NAME ?? "Bebu V3";
   const defaultAlbumArt = process.env.NEXT_PUBLIC_PLAYER_DEFAULT_ART ?? "";
 
-  const [playbackData, setPlaybackData] = useState({} as PlaybackData);
+  const [playbackData, setPlaybackData] = useState({} as Spotify.PlaybackState);
 
   const [currentTrack, setCurrentTrack] = useState({} as CurrentTrack);
   const [currentTrackTime, setCurrentTrackTime] = useState(0);

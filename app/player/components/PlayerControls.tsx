@@ -1,16 +1,13 @@
-import { MouseEventHandler, useContext } from "react";
-import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
 import Image from "next/image";
-import { NotyfContext } from "@/app/layout";
+import { MouseEventHandler, useContext } from "react";
+import { PlayerContext } from "@/app/contexts/PlayerContext";
 
 const ControlButtons = ({
   state,
-  handleNext,
-  handlePlayPause,
+  handler,
 }: {
   state: string;
-  handleNext: MouseEventHandler;
-  handlePlayPause: MouseEventHandler;
+  handler: (action: string) => void;
 }) => {
   return (
     <div className="flex flex-row gap-3">
@@ -19,21 +16,21 @@ const ControlButtons = ({
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handlePlayPause}
+        onClick={() => handler("prev")}
       />
       <Image
         src={`/images/controls/${state}.png`}
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handlePlayPause}
+        onClick={() => handler("play-pause")}
       />
       <Image
         src={`/images/controls/next.png`}
         width={50}
         height={50}
         alt="play/pause"
-        onClick={handleNext}
+        onClick={() => handler("next")}
       />
     </div>
   );
@@ -61,39 +58,25 @@ export default function PlayerControls() {
   const { authorizeClient, playerRef, playerReady, playbackData } =
     useContext(PlayerContext) || {};
 
-  const notyf = useContext(NotyfContext);
-
-  // const refreshPlayer = () => {
-  //   if (!playerRef?.current) {
-  //     console.error("Player not initialized");
-  //     return;
-  //   }
-
-  //   playerRef.current.getCurrentState().then((state) => {
-  //     console.log("Current state:", state);
-  //   });
-  // };
-
   // Toggle play/pause (now works globally)
-  const togglePlay = () => {
+  const handleControl = (action: string) => {
     if (!playerRef?.current) {
       console.error("Player not initialized");
       return;
     }
-
-    console.log("Toggling play");
-    playerRef.current.togglePlay().catch((err) => {
-      console.error("Playback error:", err);
-    });
-  };
-
-  const handlePlayPause = () => {
-    togglePlay();
-  };
-
-  const handleNext = () => {
-    console.log(notyf);
-    notyf?.success("Next track");
+    if (action === "prev") {
+      playerRef.current.previousTrack().catch((err) => {
+        console.error("Playback error:", err);
+      });
+    } else if (action === "next") {
+      playerRef.current.nextTrack().catch((err) => {
+        console.error("Playback error:", err);
+      });
+    } else if (action === "play-pause") {
+      playerRef.current.togglePlay().catch((err) => {
+        console.error("Playback error:", err);
+      });
+    }
   };
 
   const state = playbackData?.paused ? "pause" : "play";
@@ -101,11 +84,7 @@ export default function PlayerControls() {
   return (
     <div className="flex flex-row gap-3 mt-[20px]">
       {playerReady ? (
-        <ControlButtons
-          state={state}
-          handleNext={handleNext}
-          handlePlayPause={handlePlayPause}
-        />
+        <ControlButtons state={state} handler={handleControl} />
       ) : (
         <AuthButtons authorizeClient={authorizeClient} />
       )}

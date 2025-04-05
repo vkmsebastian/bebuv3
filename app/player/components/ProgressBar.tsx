@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
-import { PlayerContext } from "@/app/player/hooks/usePlayerLogic";
-import { NotyfContext } from "@/app/layout";
+import { PlayerContext } from "@/app/contexts/PlayerContext";
+import { NotyfContext } from "@/app/contexts/NotyfContext";
 
 export default function ProgressBar() {
   const {
@@ -105,10 +105,10 @@ export default function ProgressBar() {
         if (prev?.name !== track?.name) {
           setCurrentTrackTime?.(positionMs);
           setCurrentTrackDuration?.(durationMs);
-          data = track;
+          data = { ...track, timestamp };
         }
 
-        return { ...data, timestamp };
+        return data;
       });
     }, 1000);
 
