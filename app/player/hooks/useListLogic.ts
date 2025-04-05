@@ -1,8 +1,23 @@
 import { useEffect, useState } from "react";
 
+interface Track {
+  uri: string;
+  name: string;
+  album: {
+    images: { url: string }[];
+  };
+  artists: { name: string }[];
+}
+
+interface SearchResults {
+  tracks: {
+    items: Track[];
+  };
+}
+
 export default function useListLogic() {
   const [searchInput, setSearchInput] = useState<string>("");
-  const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState({} as SearchResults);
   const searchUrl = process.env.NEXT_PUBLIC_SPOTIFY_SEARCH_URL;
 
   const handleSearchItemClick = async (uri) => {
@@ -20,7 +35,7 @@ export default function useListLogic() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        context_uri: "spotify:album:1Je1IMUlBXcx1Fz0WE7oPT",
+        context_uri: uri,
         offset: { position: 0 },
         position_ms: 0,
       }),
@@ -64,6 +79,6 @@ export default function useListLogic() {
     searchResults,
     setSearchResults,
 
-    handleSearchItemClick
+    handleSearchItemClick,
   };
 }

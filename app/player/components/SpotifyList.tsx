@@ -7,7 +7,7 @@ import Image from "next/image";
 export default function SpotifyList() {
   const contextValue = useListLogic();
   const { searchResults, setSearchInput, handleSearchItemClick } = contextValue;
-  const { tracks } = searchResults ?? {};
+  const { tracks } = searchResults;
   return (
     <div className="border w-full p-1 flex flex-col">
       <div className="border h-[10%] mb-1">
@@ -31,7 +31,6 @@ export default function SpotifyList() {
             <p>Nothing here</p>
           ) : (
             tracks?.items.map((track) => {
-              console.log("Track:", track);
               return (
                 <div key={track?.uri} className="pb-2 flex flex-row gap-2">
                   <Image

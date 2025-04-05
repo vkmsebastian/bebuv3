@@ -55,13 +55,8 @@ const AuthButtons = ({
 };
 
 export default function PlayerControls() {
-  const {
-    authorizeClient,
-    playerRef,
-    playerReady,
-    playbackData,
-    refreshAccessToken,
-  } = useContext(PlayerContext) || {};
+  const { authorizeClient, playerRef, playerReady, playbackData } =
+    useContext(PlayerContext) || {};
 
   // Toggle play/pause (now works globally)
   const handleControl = (action: string) => {
