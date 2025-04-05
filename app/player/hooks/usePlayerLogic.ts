@@ -1,12 +1,4 @@
-import {
-  createContext,
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";
 
@@ -17,6 +9,8 @@ interface CurrentTrack {
   };
   artists: Array<{ name: string }>;
   name: string;
+  duration_ms: number;
+  timestamp: number;
 }
 
 interface PlaybackData {
@@ -26,42 +20,14 @@ interface PlaybackData {
   track_window: {
     current_track: CurrentTrack;
   };
+  timestamp: number;
 }
-
-export type PlayerLogicContextType = {
-  authorizeClient: () => Promise<void>;
-
-  playerName: string;
-  playerScript: string;
-  defaultAlbumArt: string;
-  authorizeUrl: string;
-  tokenUrl: string;
-  redirectUri: string;
-  clientId: string;
-  clientSecret: string;
-
-  playbackData: PlaybackData;
-  setPlaybackData: Dispatch<SetStateAction<PlaybackData>>;
-  currentTrack: CurrentTrack;
-  setCurrentTrack: Dispatch<SetStateAction<CurrentTrack>>;
-  currentTrackTime: number;
-  setCurrentTrackTime: Dispatch<SetStateAction<number>>;
-  currentTrackDuration: number;
-  setCurrentTrackDuration: (duration: number) => void;
-  progressPercent: number;
-  setProgressPercent: (percent: number) => void;
-  playerReady: boolean;
-  setPlayerReady: Dispatch<SetStateAction<boolean>>;
-  playerRef: RefObject<Spotify.Player | null>;
-  intervalRef: RefObject<NodeJS.Timeout | null>;
-  nowPlayingNotyfRef: RefObject<NotyfNotification | null>;
-};
 
 export const PlayerContext = createContext(
   {} as ReturnType<typeof usePlayerLogic>
 );
 
-export default function usePlayerLogic(): PlayerLogicContextType {
+export default function usePlayerLogic() {
   const router = useRouter();
   const authorizeUrl = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZE_URL ?? "";
   const tokenUrl = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_URL ?? "";
@@ -80,8 +46,8 @@ export default function usePlayerLogic(): PlayerLogicContextType {
   const [progressPercent, setProgressPercent] = useState(0);
   const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<Spotify.Player | null>(null);
-  const intervalRef = useRef(null);
-  const nowPlayingNotyfRef = useRef(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const nowPlayingNotyfRef = useRef<NotyfNotification | null>(null);
 
   function generateRandomString(length: number) {
     let text = "";

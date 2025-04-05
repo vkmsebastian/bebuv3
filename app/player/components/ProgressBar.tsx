@@ -14,6 +14,7 @@ export default function ProgressBar() {
     setCurrentTrackTime,
     progressPercent,
     setProgressPercent,
+    currentTrack,
     setCurrentTrack,
   } = useContext(PlayerContext) ?? {};
 
@@ -51,24 +52,21 @@ export default function ProgressBar() {
   }, [playbackData, notyf, nowPlayingNotyfRef]);
 
   useEffect(() => {
-    const { track_window: trackInfo } = playbackData ?? {};
-    const { duration: durationMs, position: positionMs } = playbackData ?? {};
-    setCurrentTrackDuration?.(durationMs ?? 0);
-    setCurrentTrackTime?.(positionMs ?? 0);
+    const {
+      duration: durationMs,
+      position: positionMs,
+      track_window: trackInfo,
+      timestamp,
+    } = playbackData ?? {};
 
     if (!trackInfo) {
       return;
     }
-    const { current_track: currentTrack } = trackInfo;
 
-    if (!currentTrack) {
+    const { current_track: track } = trackInfo;
+
+    if (!track) {
       return;
-    }
-
-    setCurrentTrack?.(currentTrack);
-
-    if (intervalRef?.current) {
-      clearInterval(intervalRef?.current);
     }
 
     if (
@@ -77,6 +75,10 @@ export default function ProgressBar() {
       currentTrackDuration === undefined
     ) {
       return;
+    }
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
     }
 
     intervalRef.current = setInterval(() => {
@@ -88,9 +90,25 @@ export default function ProgressBar() {
         return;
       }
       setCurrentTrackTime?.((prev: number) => {
-        const newTime = prev + 1000;
+        let oldTime = prev;
+        if (currentTrack?.timestamp < playbackData?.timestamp) {
+          console.log("timestmpa");
+          oldTime = playbackData?.position ?? 0;
+        }
+        const newTime = oldTime + 1000;
         setProgressPercent?.((newTime / currentTrackDuration) * 100);
         return newTime;
+      });
+
+      setCurrentTrack?.((prev) => {
+        let data = prev;
+        if (prev?.name !== track?.name) {
+          setCurrentTrackTime?.(positionMs);
+          setCurrentTrackDuration?.(durationMs);
+          data = track;
+        }
+
+        return { ...data, timestamp };
       });
     }, 1000);
 
@@ -106,12 +124,12 @@ export default function ProgressBar() {
     currentTrackTime,
     intervalRef,
     playerRef,
+    currentTrack?.timestamp,
     setCurrentTrack,
     setCurrentTrackTime,
     setCurrentTrackDuration,
     setProgressPercent,
   ]);
-
   return (
     <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">
       <div className="w-full">
