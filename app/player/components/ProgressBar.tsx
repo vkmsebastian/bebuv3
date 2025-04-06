@@ -1,17 +1,9 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { PlayerContext } from "@/app/contexts/PlayerContext";
-import { NotyfContext } from "@/app/contexts/NotyfContext";
 
 export default function ProgressBar() {
-  const {
-    nowPlayingNotyfRef,
-    playbackData,
-    currentTrackDuration,
-    currentPosition,
-    progressPercent,
-  } = useContext(PlayerContext) ?? {};
-
-  const notyf = useContext(NotyfContext);
+  const { currentTrackDuration, currentPosition, progressPercent } =
+    useContext(PlayerContext) ?? {};
 
   function toMmSs(milliseconds: number) {
     if (!milliseconds || milliseconds === 0) return "0:00";
@@ -25,24 +17,6 @@ export default function ProgressBar() {
   };
 
   // This effect is used to show a notification when the track changes
-  useEffect(() => {
-    if (!playbackData || !notyf || nowPlayingNotyfRef.current) {
-      return;
-    }
-    const { track_window: trackInfo } = playbackData;
-    const title = trackInfo?.current_track?.name;
-
-    if (!title || playbackData?.paused) {
-      return;
-    }
-
-    nowPlayingNotyfRef.current = notyf?.success(`${title}`) ?? null;
-    setTimeout(() => {
-      if (nowPlayingNotyfRef.current) {
-        nowPlayingNotyfRef.current = null;
-      }
-    }, 3000);
-  }, [playbackData, notyf, nowPlayingNotyfRef]);
 
   return (
     <div className="grid h-[45px] w-3/5 place-items-stretch pt-2">

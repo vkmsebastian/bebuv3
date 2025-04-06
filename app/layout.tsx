@@ -131,6 +131,7 @@ export default function RootLayout({
   const systemContextValue = useSystemContextLogic();
   const playerContextValue = usePlayerLogic();
   const playerListContextValue = useListLogic();
+  const { playbackData, nowPlayingNotyfRef } = playerContextValue;
 
   useEffect(() => {
     const notyfInstance = new Notyf({
@@ -154,6 +155,25 @@ export default function RootLayout({
     });
     setNotyf(notyfInstance);
   }, []);
+
+  useEffect(() => {
+    if (!playbackData || !notyf || nowPlayingNotyfRef.current) {
+      return;
+    }
+    const { track_window: trackInfo } = playbackData;
+    const title = trackInfo?.current_track?.name;
+
+    if (!title || playbackData?.paused) {
+      return;
+    }
+
+    nowPlayingNotyfRef.current = notyf?.success(`Playing: ${title}`) ?? null;
+    setTimeout(() => {
+      if (nowPlayingNotyfRef.current) {
+        nowPlayingNotyfRef.current = null;
+      }
+    }, 3000);
+  }, [playbackData, notyf, nowPlayingNotyfRef]);
 
   return (
     <html lang="en">
