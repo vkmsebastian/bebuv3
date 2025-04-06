@@ -1,7 +1,6 @@
-import { useContext, useEffect, useRef, useState, createContext } from "react";
+import { useEffect, useRef, useState, createContext } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";
-import { SystemContext } from "@/app/contexts/SystemContext";
 
 export const PlayerContext = createContext(
   {} as ReturnType<typeof usePlayerLogic>
@@ -29,6 +28,7 @@ export function usePlayerLogic() {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const nowPlayingNotyfRef = useRef<NotyfNotification | null>(null);
   const playerRef = useRef<Spotify.Player | null>(null);
+  const currentPosition = useRef(0);
 
   function generateRandomString(length: number) {
     let text = "";
@@ -241,6 +241,56 @@ export function usePlayerLogic() {
     };
   }, [playerName, playerScript, defaultAlbumArt, playerRef]);
 
+  useEffect(() => {
+    const {
+      duration: durationMs,
+      position: positionMs,
+      track_window: trackInfo,
+    } = playbackData ?? {};
+
+    if (!trackInfo || !playerRef?.current) {
+      return;
+    }
+    const { current_track: track } = trackInfo;
+
+    currentPosition.current = positionMs;
+    setCurrentTrack(track);
+    setCurrentTrackDuration(durationMs);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(() => {
+      if (playbackData?.paused) {
+        return;
+      }
+      currentPosition.current += 1000;
+
+      setProgressPercent(
+        (currentPosition.current / currentTrackDuration) * 100
+      );
+    }, 1000);
+
+    return () => {
+      if (intervalRef?.current) {
+        clearInterval(intervalRef?.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [
+    playbackData,
+    currentTrackDuration,
+    currentTrackTime,
+    intervalRef,
+    playerRef,
+    currentTrack,
+    setCurrentTrack,
+    setCurrentTrackTime,
+    setCurrentTrackDuration,
+    setProgressPercent,
+  ]);
+
   return {
     authorizeClient,
 
@@ -267,6 +317,7 @@ export function usePlayerLogic() {
     clientSecret,
     playerRef,
     intervalRef,
+    currentPosition,
     nowPlayingNotyfRef,
   };
 }

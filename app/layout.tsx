@@ -18,6 +18,7 @@ import "notyf/notyf.min.css";
 import { NotyfContext } from "./contexts/NotyfContext";
 import { SystemContext, useSystemContextLogic } from "./contexts/SystemContext";
 import { PlayerContext, usePlayerLogic } from "./contexts/PlayerContext";
+import { ListContext, useListLogic } from "./contexts/ListContext";
 
 const fredericka = Fredericka_the_Great({
   subsets: ["latin"],
@@ -46,7 +47,7 @@ const notyfFont = Oswald({
 const links = [
   { href: "/", title: "Home" },
   { href: "/player", title: "Player" },
-  { href: "/song-list", title: "Tracks" },
+  { href: "/tracks", title: "Tracks" },
   { href: "/photos", title: "Photos" },
   { href: "/about", title: "About" },
 ];
@@ -129,6 +130,8 @@ export default function RootLayout({
   const [notyf, setNotyf] = useState<Notyf | null>(null);
   const systemContextValue = useSystemContextLogic();
   const playerContextValue = usePlayerLogic();
+  const playerListContextValue = useListLogic();
+
   useEffect(() => {
     const notyfInstance = new Notyf({
       duration: 2000,
@@ -157,10 +160,12 @@ export default function RootLayout({
       <body className="bg-white dark:bg-black dark:text-white overflow-hidden antialiased">
         <SystemContext.Provider value={systemContextValue}>
           <NotyfContext.Provider value={notyf}>
-            <PlayerContext.Provider value={playerContextValue}>
-              <Navigation />
-              {children}
-            </PlayerContext.Provider>
+            <ListContext.Provider value={playerListContextValue}>
+              <PlayerContext.Provider value={playerContextValue}>
+                <Navigation />
+                {children}
+              </PlayerContext.Provider>
+            </ListContext.Provider>
           </NotyfContext.Provider>
         </SystemContext.Provider>
       </body>

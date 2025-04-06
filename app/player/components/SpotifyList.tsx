@@ -4,12 +4,15 @@ import {
   faListUl,
   faMusic,
 } from "@fortawesome/free-solid-svg-icons";
-import useListLogic from "../hooks/useListLogic";
 import _ from "lodash";
 import Image from "next/image";
+import { useContext } from "react";
+import { ListContext } from "@/app/contexts/ListContext";
+import { SystemContext } from "@/app/contexts/SystemContext";
 
 export default function SpotifyList() {
-  const contextValue = useListLogic();
+  const contextValue = useContext(ListContext);
+  const { isMobile } = useContext(SystemContext);
   const {
     searchResults,
     register,
@@ -28,14 +31,14 @@ export default function SpotifyList() {
           {...(register("search"), { onChange: handleSearchItemChange })}
         />
       </div>
-      <div className="flex flex-row gap-2">
-        <div className="w-[30%] self-start overflow-clip scrollbar-thin">
+      <div className="flex md:flex-row flex-col gap-2">
+        <div className="md:w-[30%] self-start overflow-clip scrollbar-thin">
           <p className="ps-1">
             <FontAwesomeIcon icon={faListUl} />
             {` Queue`}
           </p>
         </div>
-        <div className="relative w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
+        <div className="relative md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
           <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
             <FontAwesomeIcon icon={faMusic} />
             {` Tracks`}
@@ -78,42 +81,46 @@ export default function SpotifyList() {
             })
           )}
         </div>
-        <div className="w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
-          <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
-            <FontAwesomeIcon icon={faCompactDisc} />
-            {` Albums`}
-          </p>
-          {_.isEmpty(albums?.items) ? (
-            <p>Nothing here</p>
-          ) : (
-            albums?.items.map((album) => {
-              return (
-                <div
-                  key={album?.uri}
-                  className="mb-2 flex flex-row gap-2 hover:outline-1">
-                  <Image
-                    draggable={false}
-                    src={album?.images[0]?.url}
-                    alt="Album Art"
-                    width={45}
-                    height={45}
-                    onClick={() =>
-                      handleSearchItemClick({ context_uri: album?.uri })
-                    }
-                  />
-                  <div>
-                    <p className="select-none text-nowrap overflow-hidden">
-                      {album?.name}
-                    </p>
-                    <p className="text-xs select-none">
-                      {album?.artists.map((artist) => artist?.name).join(", ")}
-                    </p>
+        {!isMobile && (
+          <div className="md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
+            <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
+              <FontAwesomeIcon icon={faCompactDisc} />
+              {` Albums`}
+            </p>
+            {_.isEmpty(albums?.items) ? (
+              <p>Nothing here</p>
+            ) : (
+              albums?.items.map((album) => {
+                return (
+                  <div
+                    key={album?.uri}
+                    className="mb-2 flex flex-row gap-2 hover:outline-1">
+                    <Image
+                      draggable={false}
+                      src={album?.images[0]?.url}
+                      alt="Album Art"
+                      width={45}
+                      height={45}
+                      onClick={() =>
+                        handleSearchItemClick({ context_uri: album?.uri })
+                      }
+                    />
+                    <div>
+                      <p className="select-none text-nowrap overflow-hidden">
+                        {album?.name}
+                      </p>
+                      <p className="text-xs select-none">
+                        {album?.artists
+                          .map((artist) => artist?.name)
+                          .join(", ")}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
+import { createContext, useCallback, useState } from "react";
 import _ from "lodash";
-import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+
+export const ListContext = createContext({} as ReturnType<typeof useListLogic>);
 
 interface Track {
   uri: string;
@@ -31,7 +33,7 @@ type SearchInput = {
   search: string;
 };
 
-export default function useListLogic() {
+export function useListLogic() {
   const [searchResults, setSearchResults] = useState({} as SearchResults);
   const searchUrl = process.env.NEXT_PUBLIC_SPOTIFY_SEARCH_URL;
   const { register } = useForm<SearchInput>();
