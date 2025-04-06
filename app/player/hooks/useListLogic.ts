@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import _ from "lodash";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface Track {
   uri: string;
@@ -9,16 +11,30 @@ interface Track {
   artists: { name: string }[];
 }
 
+interface Album {
+  uri: string;
+  name: string;
+  images: { url: string }[];
+  artists: { name: string }[];
+}
+
 interface SearchResults {
   tracks: {
     items: Track[];
   };
+  albums: {
+    items: Album[];
+  };
 }
 
+type SearchInput = {
+  search: string;
+};
+
 export default function useListLogic() {
-  const [searchInput, setSearchInput] = useState<string>("");
   const [searchResults, setSearchResults] = useState({} as SearchResults);
   const searchUrl = process.env.NEXT_PUBLIC_SPOTIFY_SEARCH_URL;
+  const { register } = useForm<SearchInput>();
 
   const handleSearchItemClick = async (uri) => {
     const requestUrl = "https://api.spotify.com/v1/me/player/play?";
@@ -26,59 +42,56 @@ export default function useListLogic() {
       device_id: localStorage.getItem("spotify_device_id") ?? "",
     }).toString();
 
-    console.log("URI:", params);
-
-    const response = await fetch(`${requestUrl}${params}`, {
+    await fetch(`${requestUrl}${params}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        context_uri: uri,
         offset: { position: 0 },
         position_ms: 0,
+        ...uri,
       }),
     });
-
-    console.log("Response:", response);
   };
 
-  useEffect(() => {
-    if (searchInput.length > 0) {
-      const searchParams = new URLSearchParams({
-        q: searchInput,
-        type: "track,artist,album",
-        limit: "10",
-      }).toString();
+  const fetchSearchResults = _.debounce(async (url) => {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
+      },
+    });
 
-      const fetchSearchResults = async () => {
-        try {
-          const response = await fetch(`${searchUrl}${searchParams}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem(
-                "spotify_access_token"
-              )}`,
-            },
-          });
-          const data = await response.json();
-          if (response.ok) {
-            setSearchResults(data);
-          }
-        } catch (error) {
-          console.error("Error fetching search results:", error);
-        }
-      };
-      fetchSearchResults();
+    const data = await response.json();
+    if (response.ok) {
+      setSearchResults(data);
     }
-  }, [searchInput, searchUrl]);
+  }, 500);
+
+  const handleSearchItemChange = useCallback(
+    (data) => {
+      const value = data?.target?.value ?? "";
+      if (value.length > 0) {
+        const searchParams = new URLSearchParams({
+          q: value,
+          type: "track,artist,album",
+          limit: "10",
+        }).toString();
+
+        fetchSearchResults(`${searchUrl}${searchParams}`);
+      }
+    },
+    [fetchSearchResults, searchUrl]
+  );
 
   return {
-    searchInput,
-    setSearchInput,
+    register,
+
     searchResults,
     setSearchResults,
 
     handleSearchItemClick,
+    handleSearchItemChange,
   };
 }

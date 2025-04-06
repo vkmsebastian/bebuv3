@@ -48,7 +48,7 @@ export default function usePlayerLogic() {
   }
 
   async function authorize() {
-    const scope = "streaming user-read-email user-read-private";
+    const scope = "streaming user-read-email user-read-private ";
     const state = generateRandomString(16);
     localStorage.setItem("spotify_auth_state", state);
 
