@@ -23,8 +23,8 @@ export default function SpotifyList() {
       <div className="h-[10%] mb-1">
         <input
           type="text"
-          placeholder="Search something..."
-          className=" outline-1 -outline-offset-1 outline-gray-300 px-2 py-1 m-2 rounded-md"
+          placeholder="Search songs"
+          className="transition-all outline-1 focus:outline-0 focus:bg-neutral-800 w-[15%] focus:w-[20%] outline-offset-1 outline-gray-300 px-2 py-1 m-2 rounded-md"
           {...(register("search"), { onChange: handleSearchItemChange })}
         />
       </div>
@@ -36,7 +36,7 @@ export default function SpotifyList() {
           </p>
         </div>
         <div className="relative w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
-          <p className="pb-2">
+          <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
             <FontAwesomeIcon icon={faMusic} />
             {` Tracks`}
           </p>
@@ -48,7 +48,7 @@ export default function SpotifyList() {
               return (
                 <button
                   key={track?.uri}
-                  className={`w-full relative transition-all ease-in-out delay-500 duration-500 scrollbar-thin mb-2 flex flex-row gap-2 hover:h-[15%] group`}
+                  className={`w-full relative transition-all ease-in-out delay-500 duration-500 scrollbar-thin mb-2 flex flex-row gap-2 hover:h-[25%] group`}
                   onClick={() => handleSearchItemClick({ uris: [track?.uri] })}>
                   <Image
                     className="group-hover:hidden"
@@ -79,7 +79,7 @@ export default function SpotifyList() {
           )}
         </div>
         <div className="w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
-          <p className="pb-2">
+          <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
             <FontAwesomeIcon icon={faCompactDisc} />
             {` Albums`}
           </p>
