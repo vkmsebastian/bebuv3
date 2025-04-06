@@ -150,7 +150,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-white dark:bg-black dark:text-white antialiased">
+      <body className="bg-white dark:bg-black dark:text-white overflow-hidden antialiased">
         <SystemContext.Provider value={systemContextValue}>
           <NotyfContext.Provider value={notyf}>
             <Navigation />

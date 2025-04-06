@@ -76,7 +76,7 @@ export default function useListLogic() {
         const searchParams = new URLSearchParams({
           q: value,
           type: "track,artist,album",
-          limit: "10",
+          limit: "20",
         }).toString();
 
         fetchSearchResults(`${searchUrl}${searchParams}`);
