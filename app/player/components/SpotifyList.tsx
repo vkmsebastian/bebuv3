@@ -46,13 +46,19 @@ export default function SpotifyList() {
           {_.isEmpty(tracks?.items) ? (
             <p>Nothing here</p>
           ) : (
-            tracks?.items.map((track) => {
+            tracks?.items.map((track, index) => {
               const albumArt = track?.album?.images[0]?.url;
               return (
                 <button
                   key={track?.uri}
                   className={`w-full relative transition-all ease-in-out delay-500 duration-500 scrollbar-thin mb-2 flex flex-row gap-2 hover:h-[25%] group`}
-                  onClick={() => handleSearchItemClick({ uris: [track?.uri] })}>
+                  onClick={() =>
+                    handleSearchItemClick({
+                      uris: _.slice(tracks.items, index).map(
+                        (track) => track.uri
+                      ),
+                    })
+                  }>
                   <Image
                     className="group-hover:hidden"
                     draggable={false}
