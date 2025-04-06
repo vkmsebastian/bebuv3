@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, createContext } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";
+import { useListLogic } from "./ListContext";
 
 export const PlayerContext = createContext(
   {} as ReturnType<typeof usePlayerLogic>
@@ -30,6 +31,15 @@ export function usePlayerLogic() {
   const playerRef = useRef<Spotify.Player | null>(null);
   const currentPosition = useRef(0);
 
+  const { getUserQueue } = useListLogic();
+
+  useEffect(() => {
+    if (!getUserQueue) {
+      return;
+    }
+    getUserQueue();
+  }, [playbackData]);
+
   function generateRandomString(length: number) {
     let text = "";
     const possible =
@@ -42,7 +52,8 @@ export function usePlayerLogic() {
   }
 
   async function authorize() {
-    const scope = "streaming user-read-email user-read-private ";
+    const scope =
+      "streaming user-read-email user-read-private user-read-currently-playing user-read-playback-state";
     const state = generateRandomString(16);
     localStorage.setItem("spotify_auth_state", state);
 

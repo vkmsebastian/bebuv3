@@ -33,8 +33,14 @@ type SearchInput = {
   search: string;
 };
 
+interface TrackQueue {
+  currently_playing: object;
+  queue: Spotify.Track[];
+}
+
 export function useListLogic() {
   const [searchResults, setSearchResults] = useState({} as SearchResults);
+  const [trackQueue, setTrackQueue] = useState({} as TrackQueue);
   const searchUrl = process.env.NEXT_PUBLIC_SPOTIFY_SEARCH_URL;
   const { register } = useForm<SearchInput>();
 
@@ -55,7 +61,7 @@ export function useListLogic() {
         position_ms: 0,
         ...uri,
       }),
-    });
+    }).then(() => getUserQueue());
   };
 
   const fetchSearchResults = _.debounce(async (url) => {
@@ -87,12 +93,29 @@ export function useListLogic() {
     [fetchSearchResults, searchUrl]
   );
 
+  const getUserQueue = async () => {
+    const response = await fetch("https://api.spotify.com/v1/me/player/queue", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("spotify_access_token")}`,
+      },
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      setTrackQueue(data);
+    }
+  };
+
   return {
     register,
 
     searchResults,
     setSearchResults,
+    trackQueue,
+    setTrackQueue,
 
+    getUserQueue,
     handleSearchItemClick,
     handleSearchItemChange,
   };

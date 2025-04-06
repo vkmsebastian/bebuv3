@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useContext } from "react";
 import { ListContext } from "@/app/contexts/ListContext";
 import { SystemContext } from "@/app/contexts/SystemContext";
+import TrackItem from "./TrackItem";
 
 export default function SpotifyList() {
   const contextValue = useContext(ListContext);
@@ -16,11 +17,12 @@ export default function SpotifyList() {
   const {
     searchResults,
     register,
+    trackQueue,
     handleSearchItemClick,
     handleSearchItemChange,
   } = contextValue;
   const { tracks, albums } = searchResults;
-
+  console.log(trackQueue)
   return (
     <div className="w-full p-1 flex flex-col">
       <div className="h-[10%] mb-1">
@@ -37,6 +39,20 @@ export default function SpotifyList() {
             <FontAwesomeIcon icon={faListUl} />
             {` Queue`}
           </p>
+          <div>
+            <TrackItem
+              track={trackQueue.currently_playing}
+              handler={handleSearchItemClick}
+            />
+          </div>
+          {!_.isEmpty(trackQueue.queue) &&
+            trackQueue.queue.map((track) => (
+              <TrackItem
+                key={track.uri}
+                track={track}
+                handler={handleSearchItemClick}
+              />
+            ))}
         </div>
         <div className="relative md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
           <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
