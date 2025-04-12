@@ -8,7 +8,7 @@ export default function SearchBox() {
       <input
         type="text"
         placeholder="Search songs"
-        className="transition-all outline-1 focus:outline-0 focus:bg-neutral-800 w-[15%] focus:w-[20%] outline-offset-1 outline-gray-300 px-2 py-1 m-2 rounded-md"
+        className="transition-all outline-1 outline-b focus:outline-0 focus:bg-neutral-800 w-[15%] focus:w-[20%] outline-offset-1 outline-gray-300 px-2 py-1 m-2 rounded-md"
         {...(register("search"), { onChange: handleSearchItemChange })}
       />
     </div>

@@ -7,7 +7,7 @@ import _ from "lodash";
 export default function QueueItems() {
   const { trackQueue, handleSearchItemClick } = useContext(ListContext);
   return (
-    <div className="md:w-[30%] self-start overflow-clip scrollbar-thin">
+    <div className="transition-all md:w-[30%] self-start overflow-clip scrollbar-thin hover:md:w-[35%]">
       <p className="ps-1">
         <FontAwesomeIcon icon={faListUl} />
         {` Queue`}

@@ -13,7 +13,7 @@ export default function AlbumItems() {
   return (
     <>
       {!isMobile && (
-        <div className="md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:grow">
+        <div className="md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:md:w-[35%]">
           <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
             <FontAwesomeIcon icon={faCompactDisc} />
             {` Albums`}
