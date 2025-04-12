@@ -1,8 +1,8 @@
 "use client";
 import Script from "next/script";
 
-import SpotifyPlayer from "./components/SpotifyPlayer";
-import SpotifyList from "./components/SpotifyList";
+import SpotifyPlayer from "./components/TrackPlayer/SpotifyPlayer";
+import SpotifyList from "./components/TrackList/SpotifyList";
 import { useContext } from "react";
 import { SystemContext } from "../contexts/SystemContext";
 import { PlayerContext } from "../contexts/PlayerContext";
