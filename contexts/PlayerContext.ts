@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useRef, useState, createContext } from "react";
+import { useEffect, useRef, useState, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { NotyfNotification } from "notyf";
-import { useListLogic } from "./ListContext";
+import { ListContext } from "./ListContext";
+import { NotyfContext } from "./NotyfContext";
 
 export const PlayerContext = createContext(
   {} as ReturnType<typeof usePlayerLogic>
@@ -28,11 +28,11 @@ export function usePlayerLogic() {
   const [playerReady, setPlayerReady] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const nowPlayingNotyfRef = useRef<NotyfNotification | null>(null);
   const playerRef = useRef<Spotify.Player | null>(null);
   const currentPosition = useRef(0);
 
-  const { getUserQueue } = useListLogic();
+  const { getUserQueue } = useContext(ListContext);
+  const { notyf, nowPlayingNotyfRef } = useContext(NotyfContext);
 
   useEffect(() => {
     if (!getUserQueue) {
@@ -40,6 +40,26 @@ export function usePlayerLogic() {
     }
     getUserQueue();
   }, [playbackData]);
+
+  //Now Playing Notyf
+  useEffect(() => {
+    if (!playbackData || !notyf || nowPlayingNotyfRef.current) {
+      return;
+    }
+    const { track_window: trackInfo } = playbackData;
+    const title = trackInfo?.current_track?.name;
+
+    if (!title || playbackData?.paused) {
+      return;
+    }
+
+    nowPlayingNotyfRef.current = notyf?.success(`Playing: ${title}`) ?? null;
+    setTimeout(() => {
+      if (nowPlayingNotyfRef.current) {
+        nowPlayingNotyfRef.current = null;
+      }
+    }, 3000);
+  }, [playbackData, notyf, nowPlayingNotyfRef]);
 
   function generateRandomString(length: number) {
     let text = "";
@@ -99,11 +119,13 @@ export function usePlayerLogic() {
           });
 
           const data = await response.json();
+          if (!data?.token_type) return;
 
           console.log("Authorization successful", data);
           localStorage.setItem("spotify_access_token", data.access_token);
           localStorage.setItem("spotify_refresh_token", data.refresh_token);
           const expiresIn = data.expires_in * 1000;
+
           refreshIntervalRef.current = setInterval(
             refreshAccessToken,
             expiresIn
@@ -123,7 +145,6 @@ export function usePlayerLogic() {
         console.error("No refresh token available");
         return;
       }
-
       const response = await fetch(tokenUrl, {
         method: "POST",
         headers: {
@@ -200,6 +221,7 @@ export function usePlayerLogic() {
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
         localStorage.setItem("spotify_device_id", device_id);
+        notyf?.success("Player ready!");
         setPlayerReady(true);
       });
 
@@ -229,6 +251,7 @@ export function usePlayerLogic() {
         .connect()
         .then(() => {
           console.log("Player connected");
+          notyf?.success("Player connected");
         })
         .catch((err) => {
           console.error("Connection failed:", err);
@@ -251,7 +274,7 @@ export function usePlayerLogic() {
     return () => {
       globalThis.window.onSpotifyWebPlaybackSDKReady = () => {};
     };
-  }, [playerName, playerScript, defaultAlbumArt, playerRef]);
+  }, [playerName, playerScript, defaultAlbumArt, playerRef, notyf]);
 
   useEffect(() => {
     const {
@@ -330,6 +353,5 @@ export function usePlayerLogic() {
     playerRef,
     intervalRef,
     currentPosition,
-    nowPlayingNotyfRef,
   };
 }

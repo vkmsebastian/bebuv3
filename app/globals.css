@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+body {
+  font-family: "Fredericka the Great", cursive, sans-serif;
+}
+
 .img-spinner {
   width: 48px;
   height: 48px;
