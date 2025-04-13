@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { PlayerContext } from "@/app/contexts/PlayerContext";
+import { PlayerContext } from "@/contexts/PlayerContext";
 
 export default function ProgressBar() {
   const { currentTrackDuration, currentPosition, progressPercent } =

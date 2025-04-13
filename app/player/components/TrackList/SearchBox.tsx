@@ -1,4 +1,4 @@
-import { ListContext } from "@/app/contexts/ListContext";
+import { ListContext } from "@/contexts/ListContext";
 import { useContext } from "react";
 
 export default function SearchBox() {

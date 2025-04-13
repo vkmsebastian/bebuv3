@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { ListContext } from "@/app/contexts/ListContext";
-import { PlayerContext } from "@/app/contexts/PlayerContext";
+import { ListContext } from "@/contexts/ListContext";
+import { PlayerContext } from "@/contexts/PlayerContext";
 import SearchBox from "./SearchBox";
 import SearchItems from "./SearchItems";
 

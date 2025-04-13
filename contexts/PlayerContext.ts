@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState, createContext } from "react";
 import { useRouter } from "next/navigation";
 import { NotyfNotification } from "notyf";

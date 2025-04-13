@@ -1,7 +1,7 @@
 import { faMusic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
-import { ListContext } from "@/app/contexts/ListContext";
+import { ListContext } from "@/contexts/ListContext";
 import Image from "next/image";
 import _ from "lodash";
 export default function TrackItems() {

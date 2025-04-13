@@ -2,7 +2,7 @@ import { faListUl } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TrackItem from "./TrackItem";
 import { useContext } from "react";
-import { ListContext } from "@/app/contexts/ListContext";
+import { ListContext } from "@/contexts/ListContext";
 import _ from "lodash";
 export default function QueueItems() {
   const { trackQueue, handleSearchItemClick } = useContext(ListContext);

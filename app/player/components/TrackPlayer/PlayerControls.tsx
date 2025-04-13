@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { MouseEventHandler, useContext } from "react";
-import { PlayerContext } from "@/app/contexts/PlayerContext";
+import { PlayerContext } from "@/contexts/PlayerContext";
 
 const ControlButtons = ({
   state,

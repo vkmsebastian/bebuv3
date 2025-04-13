@@ -1,5 +1,5 @@
-import { ListContext } from "@/app/contexts/ListContext";
-import { SystemContext } from "@/app/contexts/SystemContext";
+import { ListContext } from "@/contexts/ListContext";
+import { SystemContext } from "@/contexts/SystemContext";
 import { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCompactDisc } from "@fortawesome/free-solid-svg-icons";

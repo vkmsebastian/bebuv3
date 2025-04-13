@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Image from "next/image";
-import { PlayerContext } from "@/app/contexts/PlayerContext";
+import { PlayerContext } from "@/contexts/PlayerContext";
 
 export default function AlbumArt() {
   const { currentTrack, defaultAlbumArt } = useContext(PlayerContext) || {};

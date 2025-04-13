@@ -4,8 +4,8 @@ import Script from "next/script";
 import SpotifyPlayer from "./components/TrackPlayer/SpotifyPlayer";
 import SpotifyList from "./components/TrackList/SpotifyList";
 import { useContext } from "react";
-import { SystemContext } from "../contexts/SystemContext";
-import { PlayerContext } from "../contexts/PlayerContext";
+import { SystemContext } from "../../contexts/SystemContext";
+import { PlayerContext } from "../../contexts/PlayerContext";
 
 export default function Player() {
   const { playerScript } = useContext(PlayerContext);
