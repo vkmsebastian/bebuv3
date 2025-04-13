@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-white dark:bg-black dark:text-white overflow-hidden antialiased">
+      <body className="bg-white dark:bg-black dark:text-white w-full overflow-hidden antialiased">
         <SystemProvider>
           <NotyfProvider>
             <ListProvider>

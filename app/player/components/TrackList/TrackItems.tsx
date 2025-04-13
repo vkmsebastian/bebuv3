@@ -8,8 +8,8 @@ export default function TrackItems() {
   const { searchResults, handleSearchItemClick } = useContext(ListContext);
   const { tracks } = searchResults;
   return (
-    <div className="relative md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:md:w-[35%]">
-      <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white">
+    <div className="max-w-full md:w-[30%] max-h-1/2 transition-all delay-100 ease-in px-2 overflow-y-auto scrollbar-thin overflow-x-hidden hover:md:w-[35%]">
+      <p className="pb-2 sticky top-0 z-1 dark:bg-black bg-white text-xl">
         <FontAwesomeIcon icon={faMusic} />
         {` Tracks`}
       </p>
@@ -42,7 +42,7 @@ export default function TrackItems() {
                 alt="Album Art"
                 fill={true}
               />
-              <div className="text-start text-shadow-md text-shadow-zinc-950">
+              <div className="text-start text-shadow-md dark:text-shadow-zinc-950 text-shadow-amber-50">
                 <p className="select-none text-nowrap overflow-hidden">
                   {track?.name}
                 </p>

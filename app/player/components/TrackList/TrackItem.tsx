@@ -28,7 +28,7 @@ export default function TrackItem({ track, handler }) {
         alt="Album Art"
         fill={true}
       />
-      <div className="text-start text-shadow-md text-shadow-zinc-950">
+      <div className="text-start text-shadow-md dark:text-shadow-zinc-950 text-shadow-amber-50">
         <p className="select-none text-nowrap overflow-hidden">{track?.name}</p>
         <p className="text-xs select-none">
           {track?.artists.map((artist) => artist?.name).join(", ")}

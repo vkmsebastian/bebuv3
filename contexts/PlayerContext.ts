@@ -34,6 +34,17 @@ export function usePlayerLogic() {
   const { getUserQueue } = useContext(ListContext);
   const { notyf, nowPlayingNotyfRef } = useContext(NotyfContext);
 
+  function generateRandomString(length: number) {
+    let text = "";
+    const possible =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
+
   useEffect(() => {
     if (!getUserQueue) {
       return;
@@ -61,17 +72,6 @@ export function usePlayerLogic() {
     }, 3000);
   }, [playbackData, notyf, nowPlayingNotyfRef]);
 
-  function generateRandomString(length: number) {
-    let text = "";
-    const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    for (let i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  }
-
   async function authorize() {
     const scope =
       "streaming user-read-email user-read-private user-read-currently-playing user-read-playback-state";
@@ -93,6 +93,7 @@ export function usePlayerLogic() {
     authorize();
   }
 
+  //Redirect Hook
   useEffect(() => {
     const urlParams = new URL(window.location.href).searchParams;
     async function authenticate() {
@@ -189,6 +190,7 @@ export function usePlayerLogic() {
     authorizeUrl,
   ]);
 
+  //General Player Init
   useEffect(() => {
     function getAccessToken() {
       return localStorage.getItem("spotify_access_token");
@@ -276,6 +278,7 @@ export function usePlayerLogic() {
     };
   }, [playerName, playerScript, defaultAlbumArt, playerRef, notyf]);
 
+  //Progress Bar Context
   useEffect(() => {
     const {
       duration: durationMs,

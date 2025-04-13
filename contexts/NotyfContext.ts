@@ -1,8 +1,7 @@
 "use client";
 import { Notyf, NotyfNotification } from "notyf";
-import { createContext, useEffect, useRef, useState } from "react";
-import { usePlayerLogic } from "./PlayerContext";
 import { Oswald } from "next/font/google";
+import { createContext, useEffect, useRef, useState } from "react";
 
 const notyfFont = Oswald({
   subsets: ["latin"],

@@ -4,7 +4,7 @@ import { useContext } from "react";
 export default function SearchBox() {
   const { register, handleSearchItemChange } = useContext(ListContext);
   return (
-    <div className="h-[10%] mb-1">
+    <div className="h-[10%] flex items-end mb-1">
       <input
         type="text"
         placeholder="Search songs"

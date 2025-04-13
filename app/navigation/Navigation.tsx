@@ -5,12 +5,11 @@ import { useSystemContextLogic } from "../../contexts/SystemContext";
 import {
   Love_Light,
   Alumni_Sans_Pinstripe,
-  Fredericka_the_Great,
+  Moon_Dance,
 } from "next/font/google";
 import NavLink from "./components/NavLink";
 
-const fredericka = Fredericka_the_Great({
-  subsets: ["latin"],
+const navlinkFont = Moon_Dance({
   display: "swap",
   weight: "400",
 });
@@ -62,25 +61,27 @@ export default function Navigation() {
   };
 
   return (
-    <div className="border-b border-gray-600 flex sm:flex-row flex-col sm:justify-between sm:py-3 sm:px-5">
+    <div className="border-b border-gray-600 flex sm:flex-row flex-col sm:justify-between sm:py-2 sm:px-3 w-full">
       <div className="flex flex-row items-center justify-center px-3 my-3 sm:my-0">
-        <p className={`${mainTitle.className} text-6xl`}>{titleText}</p>
-        <p className={`${alumniSans.className} text-2xl ps-4`}>Year 3</p>
+        <p className={`${mainTitle.className} text-6xl pe-2 border-r`}>
+          {titleText}
+        </p>
+        <p className={`${alumniSans.className} text-2xl ps-2`}>Year 3</p>
       </div>
       <div className="sm:w-1/3 flex sm:justify-between">
         <div
-          className={`${fredericka.className} flex flex-auto justify-evenly items-center`}>
+          className={`${navlinkFont.className} flex flex-auto justify-evenly items-center md:text-3xl text-2xl`}>
           {links.map((link) => {
             if (!isMobile && link?.title === "Tracks") return;
             return <NavLink key={link.href} {...link} />;
           })}
         </div>
-        <div className="flex items-center px- w-[60px]">
+        <div className="flex w-[60px]">
           <button onClick={toggleDarkMode}>
             <Image
               src={`/images/${isDarkMode ? "dark-mode" : "light-mode"}.png`}
-              width={60}
-              height={60}
+              width={50}
+              height={50}
               alt="logo"
               onLoad={() => setIsImageLoaded(true)}
               className={`${isImageLoaded ? "" : "img-spinner"}`}

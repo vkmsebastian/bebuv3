@@ -11,7 +11,7 @@ export default function NavLink({
   return (
     <Link
       href={href}
-      className={`${isActive ? "font-bold text-lg" : ""} hover:text-blue-300`}>
+      className={`${isActive ? "font-bold" : ""} hover:text-blue-300`}>
       {title}
     </Link>
   );
