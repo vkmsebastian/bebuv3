@@ -10,7 +10,9 @@ const notyfFont = Oswald({
   weight: "400",
 });
 
-export const NotyfContext = createContext<Notyf | null>(null);
+export const NotyfContext = createContext(
+  {} as ReturnType<typeof useNotyfContextLogic>
+);
 
 export function useNotyfContextLogic() {
   const [notyf, setNotyf] = useState<Notyf | null>(null);
