@@ -10,10 +10,12 @@ import { Foldit, Quicksand } from "next/font/google";
 
 const countdownNumberFont = Quicksand({
   weight: "400",
+  subsets: ["latin"],
 });
 
 const countdownTextFont = Foldit({
   weight: "400",
+  subsets: ["latin"],
 });
 
 type Countdown = {
