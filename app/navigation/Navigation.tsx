@@ -10,6 +10,7 @@ import {
 import NavLink from "./components/NavLink";
 
 const navlinkFont = Moon_Dance({
+  subsets: ["latin"],
   display: "swap",
   weight: "400",
 });
