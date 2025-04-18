@@ -1,13 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useSystemContextLogic } from "../../contexts/SystemContext";
+import { useState, useEffect, useContext } from "react";
 import {
   Love_Light,
   Alumni_Sans_Pinstripe,
   Moon_Dance,
 } from "next/font/google";
 import NavLink from "./components/NavLink";
+import { SystemContext } from "@/contexts/SystemContext";
 
 const navlinkFont = Moon_Dance({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ const links = [
 export default function Navigation() {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const { isMobile } = useSystemContextLogic();
+  const { isMobile } = useContext(SystemContext);
   const titleText = process.env.NEXT_PUBLIC_TITLE_TEXT;
 
   useEffect(() => {
