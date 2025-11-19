@@ -54,10 +54,10 @@ export function usePlayerLogic() {
         if (!playbackData || !notyf || nowPlayingNotyfRef.current) {
             return;
         }
-        const { track_window: trackInfo } = playbackData;
+        const { track_window: trackInfo, position: currentTime } = playbackData;
         const title = trackInfo?.current_track?.name;
 
-        if (!title || playbackData?.paused) {
+        if (!title || playbackData?.paused || currentTime > 1000) {
             return;
         }
 
