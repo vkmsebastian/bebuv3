@@ -11,7 +11,7 @@ export default function SpotifyList() {
   return (
     <ListContext.Provider value={contextValue}>
       {playerReady && (
-        <div className="flex flex-col justify-between max-w-4/6">
+        <div className="flex flex-col justify-center max-w-4/6">
           <SearchBox />
           <SearchItems />
         </div>
