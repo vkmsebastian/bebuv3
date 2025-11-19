@@ -67,7 +67,7 @@ export default function Navigation() {
         <p className={`${mainTitle.className} text-6xl pe-2 border-r`}>
           {titleText}
         </p>
-        <p className={`${alumniSans.className} text-2xl ps-2`}>Year 3</p>
+        <p className={`${alumniSans.className} text-2xl ps-2`}>{process.env.NEXT_PUBLIC_TITLE_TEXT_SECONDARY}</p>
       </div>
       <div className="sm:w-1/3 flex sm:justify-between">
         <div
